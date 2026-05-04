@@ -2,403 +2,433 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>入館管理システム</title>
-  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>入館管理システム | Visitor Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kaisei+Opti:wght@400;700&family=Caveat:wght@400;600;700&family=Klee+One:wght@400;600&display=swap" rel="stylesheet" />
   <style>
+    /* ===== TOKENS ===== */
     :root {
-      --mint:#ffffff; --mint-light:#ffffff; --mint-dark:#f5a7a5;
-      --sky:#8edef5;  --sky-light:#e6f8fd;  --sky-dark:#4db8d8;
-      --rose:#f5a7a5; --rose-light:#fdf0ef; --rose-dark:#d97270;
-      --text:#2d4a47; --text-sub:#5a8880; --text-hint:#8fb8b3;
-      --white:#ffffff; --border:#caeae4; --bg:#f0faf7;
+      --bg:         #fefaf6;
+      --bg-alt:     #faf4ef;
+      --card:       #ffffff;
+      --border:     #f0c8c8;
+      --border-soft:#e8ddd6;
+      --text-main:  #4a4040;
+      --text-sub:   #8a7060;
+      --text-hint:  #b8a898;
+      --accent:     #7a5c3a;
+      --yellow:     #f5c842;
+      --yellow-d:   #d4a820;
+      --blue:       #9ed8e8;
+      --blue-d:     #5ab0c8;
+      --pink:       #f5a7a5;
+      --pink-d:     #d97270;
+      --green:      #a2d6ca;
+      --green-d:    #5aaba0;
+      --white:      #ffffff;
+      --shadow-lg:  0 10px 30px -5px rgba(122,92,58,0.12);
+      --shadow-sm:  0 2px 8px rgba(122,92,58,0.06);
+      --radius-lg:  28px;
+      --radius-md:  18px;
     }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Zen Maru Gothic','Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-    .screen{display:none;max-width:520px;margin:0 auto;padding:32px 18px 60px;animation:fadeUp .35s ease;}
-    .screen.active{display:block;}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-    .card{background:var(--white);border-radius:22px;padding:24px;border:1.5px solid var(--border);margin-bottom:16px;}
-    .card-sky{background:var(--sky-light);border-color:var(--sky);}
-    .card-mint{background:var(--mint-light);border-color:var(--mint);}
-    .card-rose{background:var(--rose-light);border-color:var(--rose);}
-    button{cursor:pointer;border:none;border-radius:99px;font-family:inherit;font-weight:700;transition:all .18s ease;}
-    .btn-primary{background:var(--mint);color:var(--text);padding:14px 28px;font-size:15px;width:100%;border:2px solid var(--mint-dark);}
-    .btn-primary:hover{background:var(--mint-dark);color:var(--white);transform:translateY(-1px);}
-    .btn-sky{background:var(--sky);color:var(--text);padding:14px 28px;font-size:15px;width:100%;border:2px solid var(--sky-dark);}
-    .btn-sky:hover{background:var(--sky-dark);color:var(--white);}
-    .btn-ghost{background:var(--white);color:var(--mint-dark);padding:11px 22px;font-size:14px;border:1.5px solid var(--mint);}
-    .btn-ghost:hover{background:var(--mint-light);}
-    .btn-sm{padding:8px 18px;font-size:13px;}
-    input,select,textarea{background:var(--mint-light);border:1.5px solid var(--mint);border-radius:13px;padding:12px 16px;color:var(--text);font-family:inherit;font-size:15px;width:100%;outline:none;transition:border .2s,background .2s;}
-    input:focus,select:focus,textarea:focus{border-color:var(--sky-dark);background:var(--sky-light);}
-    .field{margin-bottom:18px;}
-    .field-label{font-size:13px;color:var(--text-sub);font-weight:700;display:block;margin-bottom:8px;}
-    .error-msg{color:var(--rose-dark);font-size:12px;margin-top:5px;display:none;}
-    .tag{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;}
-    .tag-good{background:var(--mint-light);color:var(--mint-dark);border:1px solid var(--mint);}
-    .tag-normal{background:var(--sky-light);color:var(--sky-dark);border:1px solid var(--sky);}
-    .tag-bad{background:var(--rose-light);color:var(--rose-dark);border:1px solid var(--rose);}
-    .nav{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
-    .nav-btn{cursor:pointer;padding:9px 18px;border-radius:99px;font-family:inherit;font-weight:700;font-size:13px;border:1.5px solid var(--mint);background:var(--white);color:var(--mint-dark);transition:all .15s;}
-    .nav-btn.active{background:var(--mint);color:var(--text);border-color:var(--mint-dark);}
-    .nav-btn:hover:not(.active){background:var(--mint-light);}
-    .cond-wrap{display:flex;gap:10px;}
-    .cond-btn{flex:1;flex-direction:column;display:flex;align-items:center;gap:7px;padding:14px 8px;border-radius:16px;border:2px solid var(--border);background:var(--white);color:var(--text-sub);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all .17s;}
-    .cond-btn .icon{font-size:26px;line-height:1;}
-    .cond-btn.sel-good{background:var(--mint-light);border-color:var(--mint-dark);color:var(--mint-dark);}
-    .cond-btn.sel-normal{background:var(--sky-light);border-color:var(--sky-dark);color:var(--sky-dark);}
-    .cond-btn.sel-bad{background:var(--rose-light);border-color:var(--rose-dark);color:var(--rose-dark);}
-    .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
-    .stat-box{background:var(--white);border-radius:16px;padding:16px 10px;text-align:center;border:1.5px solid var(--border);}
-    .stat-num{font-size:28px;font-weight:900;line-height:1.1;}
-    .stat-lbl{font-size:11px;color:var(--text-sub);margin-top:5px;}
-    .log-item{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--mint-light);border-radius:12px;margin-bottom:8px;border:1px solid var(--border);flex-wrap:wrap;gap:8px;}
-    .person-row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--white);border-radius:14px;margin-bottom:8px;border:1.5px solid var(--border);cursor:pointer;transition:all .14s;}
-    .person-row:hover{border-color:var(--sky);background:var(--sky-light);}
-    .avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;flex-shrink:0;}
-    .av-mint{background:var(--mint);color:var(--text);}
-    .av-sky{background:var(--sky);color:var(--text);}
-    .av-rose{background:var(--rose);color:var(--text);}
-    .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
-    .bar-date{font-size:12px;color:var(--text-sub);min-width:86px;font-weight:600;}
-    .bar-track{flex:1;background:var(--mint-light);border-radius:99px;height:20px;overflow:hidden;border:1px solid var(--border);}
-    .bar-fill{background:var(--mint);height:100%;border-radius:99px;display:flex;align-items:center;padding-left:10px;transition:width .5s ease;min-width:36px;}
-    .bar-fill span{font-size:11px;font-weight:700;color:var(--text);}
-    .visit-date-badge{font-size:11px;color:var(--sky-dark);font-weight:700;padding:3px 11px;background:var(--sky-light);border-radius:99px;display:inline-block;margin-bottom:7px;border:1px solid var(--sky);}
-    .visit-row{display:flex;justify-content:space-between;align-items:center;padding:8px 13px;background:var(--mint-light);border-radius:10px;margin-bottom:5px;border:1px solid var(--border);}
-    .text-center{text-align:center;}
-    h1.hero{font-size:27px;font-weight:900;letter-spacing:-.3px;}
-    h2.sec{font-size:15px;font-weight:700;color:var(--text-sub);margin-bottom:14px;}
-    .sub{color:var(--text-hint);font-size:13px;}
-    .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
-    .detail-meta{padding:10px 14px;background:var(--sky-light);border-radius:12px;font-size:13px;color:var(--text-sub);border:1px solid var(--sky);margin-top:12px;}
-    small{font-size:11px;color:var(--text-hint);}
-    .gas-banner{background:var(--sky);color:var(--text);padding:10px 18px;text-align:center;font-size:12px;font-weight:700;border-bottom:1.5px solid var(--sky-dark);position:sticky;top:0;z-index:10;}
-    .gas-banner.connected{background:var(--mint);border-color:var(--mint-dark);}
-    textarea{resize:vertical;}
+
+    /* ===== BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Klee One', 'Kaisei Opti', sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ===== LAYOUT ===== */
+    .screen { display: none; max-width: 500px; margin: 0 auto; padding: 24px 20px 100px; animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+    .screen.active { display: block; }
+    .screen-wide { max-width: 780px; }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .banner {
+      background: var(--bg-alt); color: var(--text-sub);
+      padding: 10px 16px; text-align: center; font-size: 11px;
+      border-bottom: 1px solid var(--border-soft);
+      position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(8px);
+    }
+    .banner.sync { background: #f0f9f5; color: var(--green-d); border-color: var(--green); }
+
+    /* ===== COMPONENTS ===== */
+    .card {
+      background: var(--card); border-radius: var(--radius-lg);
+      padding: 30px 24px; border: 1.5px solid var(--border);
+      box-shadow: var(--shadow-lg); margin-bottom: 24px;
+      position: relative; overflow: hidden;
+    }
+    .card::before { content: ""; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: transparent; }
+    .card-yellow { border-color: #f5e090; }
+    .card-yellow::before { background: var(--yellow); }
+    .card-blue { border-color: #c8eaf5; }
+    .card-blue::before { background: var(--blue); }
+
+    /* BUTTONS */
+    button { cursor: pointer; border: none; font-family: inherit; font-weight: 600; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .btn { 
+      border-radius: 99px; padding: 16px 32px; font-size: 16px; 
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-yellow { background: var(--yellow); color: #5a4010; border: 2px solid var(--yellow-d); }
+    .btn-blue { background: var(--blue); color: #1a4a5a; border: 2px solid var(--blue-d); }
+    .btn-ghost { background: transparent; color: var(--text-sub); border: 1.5px solid var(--border-soft); border-radius: 99px; padding: 10px 24px; }
+    
+    /* INPUTS */
+    .input-group { margin-bottom: 24px; }
+    .label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-sub); }
+    input {
+      width: 100%; padding: 16px; border-radius: var(--radius-md);
+      border: 1.5px solid var(--border-soft); background: var(--bg);
+      font-size: 16px; font-family: inherit; transition: all 0.2s;
+    }
+    input:focus { border-color: var(--blue-d); outline: none; background: #fff; box-shadow: 0 0 0 4px rgba(158,216,232,0.2); }
+
+    /* CONDITION PICKER */
+    .cond-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .cond-option {
+      padding: 16px 8px; border-radius: var(--radius-md); border: 1.5px solid var(--border-soft);
+      background: var(--white); display: flex; flex-direction: column; align-items: center; gap: 4px;
+      opacity: 0.6; filter: grayscale(1);
+    }
+    .cond-option.active { opacity: 1; filter: grayscale(0); border-width: 2px; }
+    .cond-option.good.active { background: #f0fdf8; border-color: var(--green-d); color: var(--green-d); }
+    .cond-option.normal.active { background: #f0faff; border-color: var(--blue-d); color: var(--blue-d); }
+    .cond-option.bad.active { background: #fff0f0; border-color: var(--pink-d); color: var(--pink-d); }
+    .cond-option .emoji { font-size: 28px; }
+
+    /* STATS */
+    .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
+    .stat-card { background: white; padding: 20px 10px; border-radius: 20px; border: 1.5px solid var(--border-soft); text-align: center; }
+    .stat-val { font-family: 'Caveat', cursive; font-size: 32px; line-height: 1; font-weight: 700; margin-bottom: 4px; }
+    .stat-label { font-size: 11px; color: var(--text-hint); font-weight: 600; }
+
+    /* LOGS */
+    .log-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; background: white; border-radius: 18px;
+      margin-bottom: 12px; border: 1.5px solid var(--border-soft);
+    }
+    .avatar {
+      width: 40px; height: 40px; border-radius: 50%; background: var(--bg-alt);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Caveat', cursive; font-size: 18px; font-weight: 700; color: var(--accent);
+      border: 1.5px solid var(--border-soft);
+    }
+
+    /* UTILS */
+    .text-center { text-align: center; }
+    .mt-4 { margin-top: 16px; }
+    .tag { font-size: 11px; padding: 2px 10px; border-radius: 99px; font-weight: 700; border: 1px solid currentColor; }
+
+    /* LOADER */
+    .loader {
+      border: 3px solid var(--border-soft); border-top: 3px solid var(--accent);
+      border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite;
+      display: none;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
-<div class="gas-banner" id="banner">
-  ⚠ デモモード（データはこのブラウザのみ保存）　Google Apps Script URL を設定するとクラウド保存になります
-</div>
+  <div class="banner" id="js-banner">
+    △ デモモード：ブラウザ内に保存されます
+  </div>
 
-<!-- HOME -->
-<div class="screen active" id="s-home">
-  <div class="text-center" style="padding-top:10px;margin-bottom:32px;">
-    <div style="font-size:52px;margin-bottom:10px;">🌿</div>
-    <h1 class="hero">入館管理システム</h1>
-    <p class="sub" style="margin-top:6px;">Visitor Management</p>
-  </div>
-  <div class="card card-sky">
-    <h2 class="sec">📱 入館者用 QRコード</h2>
-    <div style="display:flex;justify-content:center;margin-bottom:14px;">
-      <img id="qr-img" src="" alt="QR" style="width:160px;height:160px;border-radius:14px;border:2px solid var(--mint);" />
+  <!-- HOME SCREEN -->
+  <div class="screen active" id="s-home">
+    <div class="text-center" style="margin: 40px 0;">
+      <svg width="60" height="60" viewBox="0 0 64 64" fill="none">
+        <path d="M32 8 C20 14, 10 26, 14 40 C18 54, 34 58, 42 48 C50 38, 48 20, 32 8Z" stroke="#a2d6ca" stroke-width="2" fill="#e8f6f3"/>
+        <path d="M32 8 C32 8, 30 28, 20 44" stroke="#7a5c3a" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <h1 style="font-family:'Kaisei Opti'; font-size: 28px; margin-top:12px;">入館管理システム</h1>
+      <p style="font-family:'Caveat'; color:var(--text-hint); font-size:18px;">Welcome & Harmony</p>
     </div>
-    <p class="sub" id="qr-url" style="text-align:center;word-break:break-all;margin-bottom:14px;font-size:11px;"></p>
-    <button class="btn-primary" onclick="show('s-checkin')">✋ 入館フォームを開く</button>
-  </div>
-  <div class="card">
-    <h2 class="sec">👩‍💼 管理者の方</h2>
-    <button class="btn-sky" onclick="show('s-login')">🔑 管理画面へ</button>
-  </div>
-  <div style="text-align:center;margin-top:24px;opacity:.3;font-size:22px;letter-spacing:6px;">🌱 🌸 🌿 🌺</div>
-</div>
 
-<!-- CHECK-IN -->
-<div class="screen" id="s-checkin">
-  <div class="text-center" style="margin-bottom:28px;">
-    <div style="font-size:44px;margin-bottom:8px;">👋</div>
-    <h1 class="hero">入館登録</h1>
-    <p class="sub" id="ci-time" style="margin-top:6px;"></p>
-  </div>
-  <div class="card">
-    <div class="field">
-      <label class="field-label">✏️ お名前</label>
-      <input id="ci-name" type="text" placeholder="山田 太郎" />
-      <div class="error-msg" id="ci-err">お名前を入力してください</div>
-    </div>
-    <div class="field">
-      <label class="field-label">💭 今日の体調</label>
-      <div class="cond-wrap">
-        <button class="cond-btn sel-good"  id="cb-good"   onclick="selCond('good')">  <span class="icon">😊</span>良い</button>
-        <button class="cond-btn"           id="cb-normal" onclick="selCond('normal')"><span class="icon">😐</span>普通</button>
-        <button class="cond-btn"           id="cb-bad"    onclick="selCond('bad')">   <span class="icon">😞</span>悪い</button>
-      </div>
-    </div>
-    <button class="btn-primary" id="ci-submit" onclick="submitCheckin()">入館登録する →</button>
-  </div>
-  <div class="text-center" style="margin-top:12px;">
-    <button class="btn-ghost" onclick="show('s-home')">← 戻る</button>
-  </div>
-</div>
-
-<!-- DONE -->
-<div class="screen" id="s-done">
-  <div class="text-center" style="padding:56px 0;">
-    <div style="font-size:72px;margin-bottom:16px;">🎉</div>
-    <h1 class="hero" style="color:var(--mint-dark);">登録完了！</h1>
-    <p id="done-name" style="margin-top:10px;font-size:16px;font-weight:700;color:var(--text-sub);"></p>
-    <div id="done-cond" style="margin-top:14px;"></div>
-    <p class="sub" style="margin-top:20px;">素敵な一日を！🌿</p>
-    <button class="btn-ghost" style="margin-top:32px;" onclick="resetCheckin()">← もう一度入力する</button>
-  </div>
-</div>
-
-<!-- LOGIN -->
-<div class="screen" id="s-login">
-  <div class="text-center" style="margin-bottom:28px;">
-    <div style="font-size:44px;margin-bottom:8px;">🔑</div>
-    <h1 class="hero">管理者ログイン</h1>
-  </div>
-  <div class="card">
-    <div class="field">
-      <label class="field-label">パスワード</label>
-      <input id="login-pass" type="password" placeholder="パスワードを入力"
-             onkeydown="if(event.key==='Enter')doLogin()" />
-      <div class="error-msg" id="login-err">パスワードが違います</div>
-    </div>
-    <button class="btn-primary" onclick="doLogin()">ログイン</button>
-    <p class="sub" style="text-align:center;margin-top:12px;font-size:11px;">初期パスワード: admin1234</p>
-  </div>
-  <div class="text-center" style="margin-top:12px;">
-    <button class="btn-ghost" onclick="show('s-home')">← 戻る</button>
-  </div>
-</div>
-
-<!-- ADMIN -->
-<div class="screen" id="s-admin" style="max-width:720px;">
-  <div class="row" style="margin-bottom:22px;">
-    <h1 class="hero" style="font-size:20px;">管理ダッシュボード</h1>
-    <div style="display:flex;gap:8px;">
-      <button class="btn-ghost btn-sm" onclick="loadAdmin()">🔄 更新</button>
-      <button class="btn-ghost btn-sm" onclick="doLogout()">ログアウト</button>
-    </div>
-  </div>
-  <div class="nav">
-    <button class="nav-btn active" id="tab-dash"    onclick="switchTab('dash')">📊 ダッシュボード</button>
-    <button class="nav-btn"        id="tab-log"     onclick="switchTab('log')">📋 入館ログ</button>
-    <button class="nav-btn"        id="tab-persons" onclick="switchTab('persons')">👥 個人管理</button>
-  </div>
-  <div id="pane-dash">
-    <div class="stat-grid">
-      <div class="stat-box"><div class="stat-num" id="st-today"  style="color:var(--mint-dark);">0</div><div class="stat-lbl">本日の入館</div></div>
-      <div class="stat-box"><div class="stat-num" id="st-total"  style="color:var(--sky-dark);">0</div><div class="stat-lbl">累計回数</div></div>
-      <div class="stat-box"><div class="stat-num" id="st-people" style="color:var(--rose-dark);">0</div><div class="stat-lbl">登録人数</div></div>
-    </div>
-    <div class="card card-mint" style="margin-bottom:16px;">
-      <h2 class="sec">今日の体調内訳</h2>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-        <div style="text-align:center;padding:12px 6px;background:var(--white);border-radius:12px;border:1.5px solid var(--mint);">
-          <div style="font-size:24px;">😊</div><div id="c-good"   style="font-size:22px;font-weight:900;color:var(--mint-dark);">0</div><div class="sub">良い</div>
-        </div>
-        <div style="text-align:center;padding:12px 6px;background:var(--white);border-radius:12px;border:1.5px solid var(--sky);">
-          <div style="font-size:24px;">😐</div><div id="c-normal" style="font-size:22px;font-weight:900;color:var(--sky-dark);">0</div><div class="sub">普通</div>
-        </div>
-        <div style="text-align:center;padding:12px 6px;background:var(--white);border-radius:12px;border:1.5px solid var(--rose);">
-          <div style="font-size:24px;">😞</div><div id="c-bad"    style="font-size:22px;font-weight:900;color:var(--rose-dark);">0</div><div class="sub">悪い</div>
+    <div class="card card-yellow">
+      <div style="display:flex; justify-content:center; margin-bottom:24px;">
+        <div id="qrcode-container" style="padding:12px; background:white; border-radius:20px; border:1px solid #eee;">
+          <img id="js-qr-img" src="" style="width:180px; height:180px; display:block;" alt="Scan me" />
         </div>
       </div>
+      <p class="text-center" style="font-size:12px; color:var(--text-sub); margin-bottom:20px;">
+        このQRコードをスキャンして入館登録を行ってください
+      </p>
+      <button class="btn btn-yellow" onclick="navigateTo('s-checkin')">
+        <span>🖋️ 入館フォームを開く</span>
+      </button>
+    </div>
+
+    <div class="text-center">
+      <button class="btn-ghost" onclick="navigateTo('s-login')">管理者ログイン</button>
+    </div>
+  </div>
+
+  <!-- CHECK-IN SCREEN -->
+  <div class="screen" id="s-checkin">
+    <div class="text-center" style="margin-bottom:32px;">
+      <span style="font-size:40px;">👋</span>
+      <h2 style="font-family:'Kaisei Opti';">入館のご登録</h2>
+      <p id="js-current-time" style="font-size:13px; color:var(--text-hint);"></p>
+    </div>
+
+    <div class="card">
+      <div class="input-group">
+        <label class="label">お名前</label>
+        <input type="text" id="js-input-name" placeholder="例：山田 太郎" maxlength="20">
+      </div>
+
+      <div class="input-group">
+        <label class="label">今日の体調はいかがですか？</label>
+        <div class="cond-picker">
+          <div class="cond-option good active" onclick="selectCondition('good')" id="cond-good">
+            <span class="emoji">😊</span><span style="font-size:12px;">良い</span>
+          </div>
+          <div class="cond-option normal" onclick="selectCondition('normal')" id="cond-normal">
+            <span class="emoji">😐</span><span style="font-size:12px;">普通</span>
+          </div>
+          <div class="cond-option bad" onclick="selectCondition('bad')" id="cond-bad">
+            <span class="emoji">😞</span><span style="font-size:12px;">悪い</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-yellow" id="js-btn-submit" onclick="handleCheckin()">
+        <div class="loader" id="js-loader"></div>
+        <span id="js-btn-text">入館を記録する</span>
+      </button>
+    </div>
+
+    <div class="text-center">
+      <button class="btn-ghost" onclick="navigateTo('s-home')">戻る</button>
+    </div>
+  </div>
+
+  <!-- DONE SCREEN -->
+  <div class="screen" id="s-done">
+    <div class="card text-center" style="padding:60px 24px;">
+      <span style="font-size:64px; display:block; margin-bottom:20px;">✨</span>
+      <h2 style="font-family:'Kaisei Opti'; color:var(--green-d);">登録が完了しました</h2>
+      <p id="js-done-msg" style="margin:16px 0; font-weight:600;"></p>
+      <p style="color:var(--text-hint); font-size:14px;">今日も良い一日になりますように。🌿</p>
+      
+      <button class="btn btn-blue mt-4" style="margin-top:40px;" onclick="navigateTo('s-home')">トップへ戻る</button>
+    </div>
+  </div>
+
+  <!-- LOGIN SCREEN -->
+  <div class="screen" id="s-login">
+    <div class="text-center" style="margin-bottom:32px;">
+      <span style="font-size:40px;">🔑</span>
+      <h2 style="font-family:'Kaisei Opti';">管理者認証</h2>
     </div>
     <div class="card">
-      <h2 class="sec">📅 直近7日間の入館数</h2>
-      <div id="bar-chart"></div>
+      <div class="input-group">
+        <label class="label">パスワード</label>
+        <input type="password" id="js-input-pass" placeholder="••••••••">
+      </div>
+      <button class="btn btn-blue" onclick="handleLogin()">ログイン</button>
+    </div>
+    <div class="text-center">
+      <button class="btn-ghost" onclick="navigateTo('s-home')">戻る</button>
     </div>
   </div>
-  <div id="pane-log" style="display:none;">
-    <div class="card">
-      <h2 class="sec">全入館ログ（新しい順）</h2>
-      <div id="log-list"><p class="sub">まだ記録がありません</p></div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div class="screen screen-wide" id="s-admin">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
+      <div>
+        <h2 style="font-family:'Kaisei Opti';">管理ダッシュボード</h2>
+        <p style="font-size:12px; color:var(--text-hint);">データの確認と管理が行えます</p>
+      </div>
+      <button class="btn-ghost" style="padding:6px 16px; font-size:12px;" onclick="handleLogout()">ログアウト</button>
     </div>
-  </div>
-  <div id="pane-persons" style="display:none;">
-    <div id="persons-list-view">
-      <div class="card">
-        <h2 class="sec" id="persons-count">登録済み (0名)</h2>
-        <div id="persons-list"><p class="sub">まだ登録がありません</p></div>
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-val" id="js-stat-today" style="color:var(--yellow-d);">0</div>
+        <div class="stat-label">今日の入館</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="js-stat-total" style="color:var(--blue-d);">0</div>
+        <div class="stat-label">累計人数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="js-stat-unique" style="color:var(--accent);">0</div>
+        <div class="stat-label">登録者数</div>
       </div>
     </div>
-    <div id="person-detail-view" style="display:none;"></div>
+
+    <div class="card">
+      <h3 style="font-size:14px; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+        📋 最近の来館者
+        <span style="font-size:10px; font-weight:normal; background:var(--bg-alt); padding:2px 8px; border-radius:4px;">自動更新</span>
+      </h3>
+      <div id="js-log-list">
+        <!-- Logs injected here -->
+      </div>
+    </div>
   </div>
-</div>
 
-<script>
-// ============================================================
-// ⚙️  Google Apps Script の URL をここに貼り付けてください
-// ============================================================
-const GAS_URL = "https://script.google.com/macros/s/AKfycbya44S-3vKO9UnWhyeq7m_d9bnu7Ckzmw-7c3F_PkmKlrv8gTuRfcntxfKM4fADNP92NQ/exec";
-// ============================================================
+  <script>
+    /**
+     * CONFIG & STATE
+     */
+    const CONFIG = {
+      GAS_URL: "", // スプレッドシート連携時にURLを入力
+      ADMIN_PASS: "admin1234",
+      QR_COLOR: "7a5c3a",
+      QR_BG: "ffffff"
+    };
 
-const PASS = "admin1234";
-const AV_COLORS = ["av-mint","av-sky","av-rose"];
-let selCondVal = "good";
-let logs = [], persons = {};
-const isDemo = GAS_URL === "YOUR_GAS_URL_HERE";
+    let state = {
+      currentCondition: 'good',
+      logs: JSON.parse(localStorage.getItem('vms_logs') || '[]'),
+      isSubmitting: false
+    };
 
-function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch{ return null; } }
-function lsSet(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+    /**
+     * DOM HELPERS
+     */
+    const $ = id => document.getElementById(id);
+    const render = (id, html) => $(id).innerHTML = html;
 
-async function apiCall(action, payload={}){
-  if(isDemo) return demoApi(action,payload);
-  const res = await fetch(GAS_URL,{method:"POST",body:JSON.stringify({action,...payload})});
-  return res.json();
-}
+    /**
+     * CORE LOGIC
+     */
+    function init() {
+      // QRコード生成
+      const currentUrl = window.location.href.split('?')[0];
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}&color=${CONFIG.QR_COLOR}&bgcolor=${CONFIG.QR_BG}`;
+      $('js-qr-img').src = qrUrl;
 
-function demoApi(action,payload){
-  if(action==="checkin"){
-    const ls=lsGet("vms_logs")||[]; const ps=lsGet("vms_persons")||{};
-    const e={id:Date.now(),name:payload.name,condition:payload.condition,timestamp:nowStr(),date:todayStr()};
-    ls.push(e); lsSet("vms_logs",ls);
-    if(!ps[payload.name]) ps[payload.name]={name:payload.name,visits:[],notes:""};
-    ps[payload.name].visits.push({timestamp:e.timestamp,date:e.date,condition:payload.condition});
-    lsSet("vms_persons",ps); return {ok:true};
-  }
-  if(action==="getLogs")    return {ok:true,data:(lsGet("vms_logs")||[]).reverse()};
-  if(action==="getPersons") return {ok:true,data:lsGet("vms_persons")||{}};
-  if(action==="saveNotes"){
-    const ps=lsGet("vms_persons")||{};
-    if(ps[payload.name]) ps[payload.name].notes=payload.notes;
-    lsSet("vms_persons",ps); return {ok:true};
-  }
-  return {ok:false};
-}
+      // URLパラメータチェック
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === 'checkin') navigateTo('s-checkin');
 
-function nowStr(){ return new Date().toLocaleString("ja-JP"); }
-function todayStr(){
-  return new Date().toLocaleDateString("ja-JP",{year:"numeric",month:"2-digit",day:"2-digit"}).replace(/\//g,"-");
-}
-function condTag(c){
-  const m={good:["tag-good","😊 良い"],normal:["tag-normal","😐 普通"],bad:["tag-bad","😞 悪い"]};
-  const [cls,lbl]=m[c]||["tag-good","😊 良い"];
-  return `<span class="tag ${cls}">${lbl}</span>`;
-}
+      // 時刻更新
+      setInterval(() => {
+        const now = new Date();
+        $('js-current-time').textContent = now.toLocaleString('ja-JP', { dateStyle: 'medium', timeStyle: 'short' });
+      }, 1000);
+    }
 
-function show(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  window.scrollTo(0,0);
-  if(id==="s-checkin") document.getElementById("ci-time").textContent=new Date().toLocaleString("ja-JP");
-  if(id==="s-admin")   loadAdmin();
-}
+    function navigateTo(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      $(screenId).classList.add('active');
+      window.scrollTo(0, 0);
 
-(function init(){
-  const base = window.location.origin + window.location.pathname;
-  const url  = base + "?mode=checkin";
-  document.getElementById("qr-url").textContent = url;
-  document.getElementById("qr-img").src =
-    `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(url)}&color=5aaba0&bgcolor=e8f6f3`;
-  if(new URLSearchParams(location.search).get("mode")==="checkin") show("s-checkin");
-  if(!isDemo){
-    const b=document.getElementById("banner");
-    b.textContent="✅ Google スプレッドシートと連携中";
-    b.classList.add("connected");
-  }
-})();
+      if (screenId === 's-admin') refreshAdminData();
+    }
 
-function selCond(c){
-  selCondVal=c;
-  ["good","normal","bad"].forEach(k=>{
-    document.getElementById("cb-"+k).className="cond-btn"+(k===c?" sel-"+k:"");
-  });
-}
+    function selectCondition(val) {
+      state.currentCondition = val;
+      document.querySelectorAll('.cond-option').forEach(opt => opt.classList.remove('active'));
+      $(`cond-${val}`).classList.add('active');
+    }
 
-async function submitCheckin(){
-  const name=document.getElementById("ci-name").value.trim();
-  const err=document.getElementById("ci-err");
-  if(!name){ err.style.display="block"; return; }
-  err.style.display="none";
-  const btn=document.getElementById("ci-submit");
-  btn.textContent="送信中... 🌿"; btn.disabled=true;
-  try{
-    await apiCall("checkin",{name,condition:selCondVal});
-    document.getElementById("done-name").textContent=name+" さん、ようこそ！";
-    document.getElementById("done-cond").innerHTML=condTag(selCondVal);
-    show("s-done");
-  }catch(e){ alert("送信に失敗しました。もう一度お試しください。"); }
-  btn.textContent="入館登録する →"; btn.disabled=false;
-}
+    async function handleCheckin() {
+      const name = $('js-input-name').value.trim();
+      if (!name) return alert('お名前を入力してください');
+      if (state.isSubmitting) return;
 
-function resetCheckin(){
-  document.getElementById("ci-name").value=""; selCond("good"); show("s-checkin");
-}
+      setLoading(true);
 
-function doLogin(){
-  const p=document.getElementById("login-pass").value;
-  const err=document.getElementById("login-err");
-  if(p===PASS){ err.style.display="none"; document.getElementById("login-pass").value=""; show("s-admin"); }
-  else err.style.display="block";
-}
-function doLogout(){ show("s-home"); }
+      const entry = {
+        id: Date.now(),
+        name: name,
+        condition: state.currentCondition,
+        timestamp: new Date().toLocaleString('ja-JP'),
+        date: new Date().toLocaleDateString('ja-JP')
+      };
 
-async function loadAdmin(){
-  const [lr,pr]=await Promise.all([apiCall("getLogs"),apiCall("getPersons")]);
-  logs=lr.data||[]; persons=pr.data||{};
-  const td=todayStr(); const tl=logs.filter(l=>l.date===td);
-  document.getElementById("st-today").textContent  = tl.length;
-  document.getElementById("st-total").textContent  = logs.length;
-  document.getElementById("st-people").textContent = Object.keys(persons).length;
-  const cc={good:0,normal:0,bad:0};
-  tl.forEach(l=>{ if(cc[l.condition]!==undefined) cc[l.condition]++; });
-  document.getElementById("c-good").textContent   = cc.good;
-  document.getElementById("c-normal").textContent = cc.normal;
-  document.getElementById("c-bad").textContent    = cc.bad;
-  const byDate={};
-  logs.forEach(l=>{ byDate[l.date]=(byDate[l.date]||0)+1; });
-  const recent=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,7);
-  const max=Math.max(...recent.map(d=>d[1]),1);
-  document.getElementById("bar-chart").innerHTML=recent.length===0
-    ?'<p class="sub">データがありません</p>'
-    :recent.map(([date,count])=>`<div class="bar-row"><span class="bar-date">${date}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round((count/max)*100)}%"><span>${count}人</span></div></div></div>`).join("");
-  document.getElementById("log-list").innerHTML=logs.length===0
-    ?'<p class="sub">まだ記録がありません</p>'
-    :logs.map(l=>`<div class="log-item"><div style="display:flex;align-items:center;gap:10px;"><div class="avatar av-mint" style="width:32px;height:32px;font-size:13px;">${(l.name||"?")[0]}</div><div><div style="font-weight:700;font-size:14px;">${l.name}</div>${condTag(l.condition)}</div></div><small>${l.timestamp}</small></div>`).join("");
-  const keys=Object.keys(persons);
-  document.getElementById("persons-count").textContent=`登録済み (${keys.length}名)`;
-  document.getElementById("persons-list").innerHTML=keys.length===0
-    ?'<p class="sub">まだ登録がありません</p>'
-    :keys.map((name,i)=>{
-      const p=persons[name]; const av=AV_COLORS[i%3];
-      return `<div class="person-row" onclick="showPersonDetail('${name.replace(/'/g,"\\'")}')"><div style="display:flex;align-items:center;gap:12px;"><div class="avatar ${av}">${name[0]}</div><div><div style="font-weight:700;font-size:15px;">${name}</div><div class="sub" style="font-size:12px;margin-top:2px;">来館 ${p.visits?.length||0} 回</div></div></div><span style="color:var(--text-hint);font-size:18px;">→</span></div>`;
-    }).join("");
-}
+      // シミュレーション遅延
+      await new Promise(r => setTimeout(r, 1000));
 
-function switchTab(t){
-  ["dash","log","persons"].forEach(k=>{
-    document.getElementById("pane-"+k).style.display=k===t?"block":"none";
-    document.getElementById("tab-"+k).className="nav-btn"+(k===t?" active":"");
-  });
-}
+      // データの保存
+      state.logs.unshift(entry);
+      CONFIG.GAS_https://script.google.com/macros/library/d/1kZXAC_V9-i3cEpj-lcmGjoFMlGuz2jSVvZpgz24FzWzusGyFxFanuPxD/2('vms_logs', JSON.stringify(state.logs));
 
-function showPersonDetail(name){
-  const p=persons[name]; if(!p) return;
-  document.getElementById("persons-list-view").style.display="none";
-  const dv=document.getElementById("person-detail-view"); dv.style.display="block";
-  const byDate={};
-  (p.visits||[]).forEach(v=>{ if(!byDate[v.date]) byDate[v.date]=[]; byDate[v.date].push(v); });
-  const histHtml=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).map(([date,visits])=>`<div style="margin-bottom:14px;"><span class="visit-date-badge">${date}</span>${visits.map(v=>`<div class="visit-row">${condTag(v.condition)}<small>${v.timestamp}</small></div>`).join("")}</div>`).join("")||'<p class="sub">履歴がありません</p>';
-  const last=p.visits?.at(-1);
-  const lastHtml=last?`<div class="detail-meta">最終来館: <strong>${last.timestamp}</strong>　${condTag(last.condition)}</div>`:"";
-  dv.innerHTML=`<button class="btn-ghost btn-sm" style="margin-bottom:18px;" onclick="backToList()">← 一覧へ戻る</button>
-    <div class="card" style="margin-bottom:14px;"><div style="display:flex;gap:14px;align-items:center;"><div class="avatar av-mint" style="width:54px;height:54px;font-size:22px;">${name[0]}</div><div><div style="font-size:22px;font-weight:900;">${name}</div><div class="sub" style="margin-top:4px;">合計 ${p.visits?.length||0} 回来館</div></div></div>${lastHtml}</div>
-    <div class="card card-sky" style="margin-bottom:14px;"><h2 class="sec">📝 メモ・追加情報</h2><textarea id="notes-area" rows="4" placeholder="例: バドミントンが好き、毎週火曜来館...">${p.notes||""}</textarea><button class="btn-primary" id="save-btn" style="margin-top:12px;" onclick="saveNotes('${name.replace(/'/g,"\\'")}')">💾 保存する</button></div>
-    <div class="card"><h2 class="sec">🗓️ 来館履歴</h2>${histHtml}</div>`;
-}
+      $('js-done-msg').textContent = `${name} 様`;
+      setLoading(false);
+      navigateTo('s-done');
+      
+      // 入力リセット
+      $('js-input-name').value = '';
+      selectCondition('good');
+    }
 
-function backToList(){
-  document.getElementById("person-detail-view").style.display="none";
-  document.getElementById("persons-list-view").style.display="block";
-}
+    function setLoading(val) {
+      state.isSubmitting = val;
+      $('js-loader').style.display = val ? 'block' : 'none';
+      $('js-btn-text').style.display = val ? 'none' : 'block';
+      $('js-btn-submit').disabled = val;
+    }
 
-async function saveNotes(name){
-  const notes=document.getElementById("notes-area").value;
-  await apiCall("saveNotes",{name,notes});
-  persons[name].notes=notes;
-  const btn=document.getElementById("save-btn");
-  btn.textContent="✅ 保存しました！"; btn.style.background="var(--mint-dark)"; btn.style.color="var(--white)";
-  setTimeout(()=>{ btn.textContent="💾 保存する"; btn.style.background=""; btn.style.color=""; },2200);
-}
-</script>
+    function handleLogin() {
+      const pass = $('js-input-pass').value;
+      if (pass === CONFIG.ADMIN_PASS) {
+        $('js-input-pass').value = '';
+        navigateTo('s-admin');
+      } else {
+        alert('パスワードが正しくありません');
+      }
+    }
+
+    function handleLogout() {
+      navigateTo('s-home');
+    }
+
+    function refreshAdminData() {
+      const today = new Date().toLocaleDateString('ja-JP');
+      const todayLogs = state.logs.filter(l => l.date === today);
+      const uniqueNames = new Set(state.logs.map(l => l.name));
+
+      $('js-stat-today').textContent = todayLogs.length;
+      $('js-stat-total').textContent = state.logs.length;
+      $('js-stat-unique').textContent = uniqueNames.size;
+
+      const logHtml = state.logs.length === 0 
+        ? '<p style="text-align:center; padding:40px; color:var(--text-hint);">履歴がありません</p>'
+        : state.logs.slice(0, 20).map(log => `
+          <div class="log-row">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div class="avatar">${log.name[0]}</div>
+              <div>
+                <div style="font-weight:600; font-size:14px;">${log.name}</div>
+                <div style="font-size:11px; color:var(--text-hint);">${log.timestamp}</div>
+              </div>
+            </div>
+            <div>
+              ${getConditionTag(log.condition)}
+            </div>
+          </div>
+        `).join('');
+      
+      render('js-log-list', logHtml);
+    }
+
+    function getConditionTag(c) {
+      const labels = { good: ['#5aaba0', '😊 良い'], normal: ['#5ab0c8', '😐 普通'], bad: ['#d97270', '😞 悪い'] };
+      const [color, text] = labels[c] || labels.good;
+      return `<span class="tag" style="color:${color}">${text}</span>`;
+    }
+
+    // 起動
+    window.onload = init;
+  </script>
 </body>
 </html>
