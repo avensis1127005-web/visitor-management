@@ -2,21 +2,21 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>入館管理システム | Visitor Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>入館管理システム</title>
   <link href="https://fonts.googleapis.com/css2?family=Kaisei+Opti:wght@400;700&family=Caveat:wght@400;600;700&family=Klee+One:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     /* ===== TOKENS ===== */
     :root {
-      --bg:         #fefaf6;
-      --bg-alt:     #faf4ef;
+      --bg:         #fdf8f4;
+      --bg2:        #faf4ef;
       --card:       #ffffff;
       --border:     #f0c8c8;
-      --border-soft:#e8ddd6;
-      --text-main:  #4a4040;
+      --border2:    #e8ddd6;
+      --text:       #4a4040;
       --text-sub:   #8a7060;
       --text-hint:  #b8a898;
-      --accent:     #7a5c3a;
+      --brown:      #7a5c3a;
       --yellow:     #f5c842;
       --yellow-d:   #d4a820;
       --blue:       #9ed8e8;
@@ -26,409 +26,545 @@
       --green:      #a2d6ca;
       --green-d:    #5aaba0;
       --white:      #ffffff;
-      --shadow-lg:  0 10px 30px -5px rgba(122,92,58,0.12);
-      --shadow-sm:  0 2px 8px rgba(122,92,58,0.06);
-      --radius-lg:  28px;
-      --radius-md:  18px;
+      --shadow:     0 4px 20px rgba(122,92,58,0.08);
+      --shadow-sm:  0 2px 10px rgba(122,92,58,0.06);
     }
-
-    /* ===== BASE ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: 'Klee One', 'Kaisei Opti', sans-serif;
+      font-family: 'Klee One', 'Kaisei Opti', 'Noto Sans JP', serif;
       background: var(--bg);
-      color: var(--text-main);
-      line-height: 1.6;
-      overflow-x: hidden;
-      -webkit-tap-highlight-color: transparent;
+      color: var(--text);
+      min-height: 100vh;
     }
 
-    /* ===== LAYOUT ===== */
-    .screen { display: none; max-width: 500px; margin: 0 auto; padding: 24px 20px 100px; animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+    /* ===== SCREENS ===== */
+    .screen { display: none; max-width: 540px; margin: 0 auto; padding: 36px 22px 80px; animation: fadeUp .4s ease; }
     .screen.active { display: block; }
-    .screen-wide { max-width: 780px; }
-    
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .screen-wide { max-width: 740px; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:translateY(0) } }
 
+    /* ===== BANNER ===== */
     .banner {
-      background: var(--bg-alt); color: var(--text-sub);
-      padding: 10px 16px; text-align: center; font-size: 11px;
-      border-bottom: 1px solid var(--border-soft);
-      position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(8px);
+      background: var(--bg2); color: var(--text-sub);
+      padding: 9px 20px; text-align: center;
+      font-size: 12px; font-family: 'Klee One', serif;
+      border-bottom: 1px solid var(--border2);
+      position: sticky; top: 0; z-index: 100;
+      letter-spacing: .3px;
     }
-    .banner.sync { background: #f0f9f5; color: var(--green-d); border-color: var(--green); }
+    .banner.connected { background: #f0f9f5; color: var(--green-d); border-color: var(--green); }
 
-    /* ===== COMPONENTS ===== */
+    /* ===== CARDS ===== */
     .card {
-      background: var(--card); border-radius: var(--radius-lg);
-      padding: 30px 24px; border: 1.5px solid var(--border);
-      box-shadow: var(--shadow-lg); margin-bottom: 24px;
-      position: relative; overflow: hidden;
+      background: var(--card); border-radius: 24px;
+      padding: 28px; border: 1.5px solid var(--border);
+      box-shadow: var(--shadow); margin-bottom: 20px;
     }
-    .card::before { content: ""; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: transparent; }
-    .card-yellow { border-color: #f5e090; }
-    .card-yellow::before { background: var(--yellow); }
-    .card-blue { border-color: #c8eaf5; }
-    .card-blue::before { background: var(--blue); }
+    .card-yellow { border-color: #f5e090; background: #fffdf0; }
+    .card-blue   { border-color: #c8eaf5; background: #f0faff; }
+    .card-pink   { border-color: var(--border); background: #fff8f8; }
+    .card-green  { border-color: #c8e8e0; background: #f5fdf8; }
 
-    /* BUTTONS */
-    button { cursor: pointer; border: none; font-family: inherit; font-weight: 600; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .btn { 
-      border-radius: 99px; padding: 16px 32px; font-size: 16px; 
-      width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
-    }
-    .btn:active { transform: scale(0.97); }
+    /* ===== BUTTONS ===== */
+    button { cursor: pointer; border: none; font-family: 'Klee One', serif; font-weight: 600; transition: all .2s ease; letter-spacing: .5px; }
+    .btn { border-radius: 99px; padding: 15px 28px; font-size: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-sm); }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(122,92,58,0.14); }
+    .btn:active { transform: translateY(0); }
     .btn-yellow { background: var(--yellow); color: #5a4010; border: 2px solid var(--yellow-d); }
-    .btn-blue { background: var(--blue); color: #1a4a5a; border: 2px solid var(--blue-d); }
-    .btn-ghost { background: transparent; color: var(--text-sub); border: 1.5px solid var(--border-soft); border-radius: 99px; padding: 10px 24px; }
-    
-    /* INPUTS */
-    .input-group { margin-bottom: 24px; }
-    .label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-sub); }
-    input {
-      width: 100%; padding: 16px; border-radius: var(--radius-md);
-      border: 1.5px solid var(--border-soft); background: var(--bg);
-      font-size: 16px; font-family: inherit; transition: all 0.2s;
-    }
-    input:focus { border-color: var(--blue-d); outline: none; background: #fff; box-shadow: 0 0 0 4px rgba(158,216,232,0.2); }
+    .btn-yellow:hover { background: #f8d050; }
+    .btn-blue   { background: var(--blue);   color: #1a4a5a; border: 2px solid var(--blue-d); }
+    .btn-blue:hover { background: #b8e8f5; }
+    .btn-green  { background: var(--green);  color: #1a4a40; border: 2px solid var(--green-d); }
+    .btn-green:hover { background: #b8e0d8; }
+    .btn-ghost  { background: var(--white); color: var(--brown); border: 1.5px solid var(--border); border-radius: 99px; padding: 11px 24px; font-size: 14px; box-shadow: var(--shadow-sm); }
+    .btn-ghost:hover { background: var(--bg2); }
+    .btn-sm { padding: 9px 20px; font-size: 13px; width: auto; }
 
-    /* CONDITION PICKER */
-    .cond-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .cond-option {
-      padding: 16px 8px; border-radius: var(--radius-md); border: 1.5px solid var(--border-soft);
-      background: var(--white); display: flex; flex-direction: column; align-items: center; gap: 4px;
-      opacity: 0.6; filter: grayscale(1);
+    /* ===== INPUTS ===== */
+    input, select, textarea {
+      background: var(--bg); border: 1.5px solid var(--border2);
+      border-radius: 16px; padding: 14px 18px; color: var(--text);
+      font-family: 'Klee One', serif; font-size: 15px; width: 100%;
+      outline: none; transition: border .2s, background .2s, box-shadow .2s;
     }
-    .cond-option.active { opacity: 1; filter: grayscale(0); border-width: 2px; }
-    .cond-option.good.active { background: #f0fdf8; border-color: var(--green-d); color: var(--green-d); }
-    .cond-option.normal.active { background: #f0faff; border-color: var(--blue-d); color: var(--blue-d); }
-    .cond-option.bad.active { background: #fff0f0; border-color: var(--pink-d); color: var(--pink-d); }
-    .cond-option .emoji { font-size: 28px; }
-
-    /* STATS */
-    .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
-    .stat-card { background: white; padding: 20px 10px; border-radius: 20px; border: 1.5px solid var(--border-soft); text-align: center; }
-    .stat-val { font-family: 'Caveat', cursive; font-size: 32px; line-height: 1; font-weight: 700; margin-bottom: 4px; }
-    .stat-label { font-size: 11px; color: var(--text-hint); font-weight: 600; }
-
-    /* LOGS */
-    .log-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 18px; background: white; border-radius: 18px;
-      margin-bottom: 12px; border: 1.5px solid var(--border-soft);
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--blue-d); background: #f0faff;
+      box-shadow: 0 0 0 3px rgba(158,216,232,.25);
     }
-    .avatar {
-      width: 40px; height: 40px; border-radius: 50%; background: var(--bg-alt);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Caveat', cursive; font-size: 18px; font-weight: 700; color: var(--accent);
-      border: 1.5px solid var(--border-soft);
-    }
+    textarea { resize: vertical; }
+    .field { margin-bottom: 20px; }
+    .field-label { font-size: 13px; color: var(--text-sub); font-weight: 600; display: block; margin-bottom: 9px; }
+    .error-msg { color: var(--pink-d); font-size: 12px; margin-top: 6px; display: none; }
 
-    /* UTILS */
+    /* ===== TAGS ===== */
+    .tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 13px; border-radius: 99px; font-size: 12px; font-weight: 600; font-family: 'Klee One', serif; }
+    .tag-good   { background: #f0fdf8; color: var(--green-d); border: 1px solid var(--green); }
+    .tag-normal { background: #f0faff; color: var(--blue-d);  border: 1px solid var(--blue); }
+    .tag-bad    { background: #fff0f0; color: var(--pink-d);  border: 1px solid var(--pink); }
+
+    /* ===== CONDITION BUTTONS ===== */
+    .cond-wrap { display: flex; gap: 12px; }
+    .cond-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;
+      padding: 16px 8px; border-radius: 20px; border: 2px solid var(--border2);
+      background: var(--white); color: var(--text-hint);
+      font-family: 'Klee One', serif; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all .2s; box-shadow: var(--shadow-sm);
+    }
+    .cond-btn .icon { font-size: 28px; line-height: 1; }
+    .cond-btn:hover { transform: translateY(-2px); }
+    .cond-btn.sel-good   { background: #f0fdf8; border-color: var(--green-d); color: var(--green-d); box-shadow: 0 4px 14px rgba(90,171,160,.2); }
+    .cond-btn.sel-normal { background: #f0faff; border-color: var(--blue-d);  color: var(--blue-d);  box-shadow: 0 4px 14px rgba(90,176,200,.2); }
+    .cond-btn.sel-bad    { background: #fff0f0; border-color: var(--pink-d);  color: var(--pink-d);  box-shadow: 0 4px 14px rgba(217,114,112,.2); }
+
+    /* ===== NAV TABS ===== */
+    .nav { display: flex; gap: 8px; margin-bottom: 26px; flex-wrap: wrap; }
+    .nav-btn {
+      cursor: pointer; padding: 9px 18px; border-radius: 99px;
+      font-family: 'Klee One', serif; font-weight: 600; font-size: 13px;
+      border: 1.5px solid var(--border2); background: var(--white); color: var(--text-sub);
+      transition: all .15s; box-shadow: var(--shadow-sm);
+    }
+    .nav-btn.active { background: var(--brown); color: var(--white); border-color: var(--brown); }
+    .nav-btn:hover:not(.active) { background: var(--bg2); }
+
+    /* ===== STATS ===== */
+    .stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+    .stat-box  { background: var(--white); border-radius: 20px; padding: 18px 10px; text-align: center; border: 1.5px solid var(--border2); box-shadow: var(--shadow-sm); }
+    .stat-num  { font-size: 30px; font-weight: 700; font-family: 'Caveat', cursive; line-height: 1.1; }
+    .stat-lbl  { font-size: 11px; color: var(--text-hint); margin-top: 5px; }
+
+    /* ===== LOG / PERSON ROWS ===== */
+    .log-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 13px 16px; background: var(--bg2); border-radius: 16px;
+      margin-bottom: 10px; border: 1px solid var(--border2); flex-wrap: wrap; gap: 8px;
+    }
+    .person-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 18px; background: var(--white); border-radius: 18px;
+      margin-bottom: 10px; border: 1.5px solid var(--border2); cursor: pointer;
+      transition: all .18s; box-shadow: var(--shadow-sm);
+    }
+    .person-row:hover { border-color: var(--blue); background: #f0faff; transform: translateY(-1px); }
+
+    /* ===== AVATAR ===== */
+    .avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; font-family: 'Caveat', cursive; flex-shrink: 0; }
+    .av-brown { background: #f5e8d8; color: var(--brown); border: 1.5px solid var(--border2); }
+    .av-blue  { background: #e0f4fc; color: var(--blue-d); border: 1.5px solid var(--blue); }
+    .av-pink  { background: #fde8e8; color: var(--pink-d); border: 1.5px solid var(--pink); }
+
+    /* ===== BAR CHART ===== */
+    .bar-row   { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .bar-date  { font-size: 12px; color: var(--text-sub); min-width: 88px; font-weight: 600; }
+    .bar-track { flex: 1; background: var(--bg2); border-radius: 99px; height: 22px; overflow: hidden; border: 1px solid var(--border2); }
+    .bar-fill  { background: linear-gradient(90deg, var(--yellow), var(--yellow-d)); height: 100%; border-radius: 99px; display: flex; align-items: center; padding-left: 10px; transition: width .6s ease; min-width: 36px; }
+    .bar-fill span { font-size: 11px; font-weight: 700; color: #5a4010; }
+
+    /* ===== VISIT HISTORY ===== */
+    .visit-date-badge { font-size: 11px; color: var(--brown); font-weight: 600; padding: 3px 12px; background: #f5e8d8; border-radius: 99px; display: inline-block; margin-bottom: 8px; border: 1px solid var(--border2); }
+    .visit-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 14px; background: var(--bg2); border-radius: 12px; margin-bottom: 6px; border: 1px solid var(--border2); }
+
+    /* ===== MISC ===== */
     .text-center { text-align: center; }
-    .mt-4 { margin-top: 16px; }
-    .tag { font-size: 11px; padding: 2px 10px; border-radius: 99px; font-weight: 700; border: 1px solid currentColor; }
+    h1.hero { font-size: 28px; font-weight: 700; font-family: 'Kaisei Opti', serif; color: var(--text); letter-spacing: .5px; }
+    h2.sec { font-size: 14px; font-weight: 600; color: var(--text-sub); margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+    .sub { color: var(--text-hint); font-size: 13px; }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .detail-meta { padding: 12px 16px; background: #f0faff; border-radius: 14px; font-size: 13px; color: var(--text-sub); border: 1px solid var(--blue); margin-top: 12px; }
+    small { font-size: 11px; color: var(--text-hint); }
 
-    /* LOADER */
-    .loader {
-      border: 3px solid var(--border-soft); border-top: 3px solid var(--accent);
-      border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite;
-      display: none;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    /* ===== HERO SVG LEAF ===== */
+    .hero-leaf { display: block; margin: 0 auto 14px; }
+
+    /* ===== FOOTER ICONS ===== */
+    .footer-icons { display: flex; justify-content: center; gap: 16px; margin-top: 32px; opacity: .55; }
+    .footer-icons svg { width: 28px; height: 28px; }
   </style>
 </head>
 <body>
 
-  <div class="banner" id="js-banner">
-    △ デモモード：ブラウザ内に保存されます
+<!-- BANNER -->
+<div class="banner" id="banner">
+  △ デモモード（データはこのブラウザのみ保存）　Google Apps Script URL を設定するとクラウド保存になります
+</div>
+
+<!-- ===================== HOME ===================== -->
+<div class="screen active" id="s-home">
+  <div class="text-center" style="padding-top:16px; margin-bottom:36px;">
+    <!-- Leaf SVG -->
+    <svg class="hero-leaf" width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M32 8 C20 14, 10 26, 14 40 C18 54, 34 58, 42 48 C50 38, 48 20, 32 8Z" stroke="#a2d6ca" stroke-width="2" fill="#e8f6f3"/>
+      <path d="M32 8 C32 8, 30 28, 20 44" stroke="#7a5c3a" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      <path d="M26 28 C30 24, 38 26, 40 30" stroke="#a2b890" stroke-width="1" stroke-linecap="round" fill="none"/>
+      <path d="M24 36 C28 30, 36 32, 38 38" stroke="#a2b890" stroke-width="1" stroke-linecap="round" fill="none"/>
+      <line x1="32" y1="56" x2="32" y2="62" stroke="#7a5c3a" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <h1 class="hero">入館管理システム</h1>
+    <p class="sub" style="margin-top:6px; font-family:'Caveat',cursive; font-size:15px; letter-spacing:1px;">Visitor Management</p>
   </div>
 
-  <!-- HOME SCREEN -->
-  <div class="screen active" id="s-home">
-    <div class="text-center" style="margin: 40px 0;">
-      <svg width="60" height="60" viewBox="0 0 64 64" fill="none">
-        <path d="M32 8 C20 14, 10 26, 14 40 C18 54, 34 58, 42 48 C50 38, 48 20, 32 8Z" stroke="#a2d6ca" stroke-width="2" fill="#e8f6f3"/>
-        <path d="M32 8 C32 8, 30 28, 20 44" stroke="#7a5c3a" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <h1 style="font-family:'Kaisei Opti'; font-size: 28px; margin-top:12px;">入館管理システム</h1>
-      <p style="font-family:'Caveat'; color:var(--text-hint); font-size:18px;">Welcome & Harmony</p>
+  <div class="card card-yellow">
+    <h2 class="sec">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7a5c3a" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 14h3M14 17v3"/></svg>
+      入館者用 QRコード
+    </h2>
+    <div style="display:flex;justify-content:center;margin-bottom:14px;">
+      <img id="qr-img" src="" alt="QR" style="width:168px;height:168px;border-radius:16px;border:2px solid #e0c8a0;" />
     </div>
+    <p class="sub" id="qr-url" style="text-align:center;word-break:break-all;margin-bottom:18px;font-size:11px;color:var(--brown);"></p>
+    <button class="btn btn-yellow" onclick="show('s-checkin')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 11.5A4.5 4.5 0 1112 7"/><path d="M12 7v5l3 3"/></svg>
+      入館フォームを開く
+    </button>
+  </div>
 
-    <div class="card card-yellow">
-      <div style="display:flex; justify-content:center; margin-bottom:24px;">
-        <div id="qrcode-container" style="padding:12px; background:white; border-radius:20px; border:1px solid #eee;">
-          <img id="js-qr-img" src="" style="width:180px; height:180px; display:block;" alt="Scan me" />
+  <div class="card card-blue">
+    <h2 class="sec">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5ab0c8" stroke-width="2" stroke-linecap="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+      管理者の方
+    </h2>
+    <button class="btn btn-blue" onclick="show('s-login')">
+      🔑 管理画面へ
+    </button>
+  </div>
+
+  <!-- Footer icons -->
+  <div class="footer-icons">
+    <!-- Sprout -->
+    <svg viewBox="0 0 24 24" fill="none" stroke="#a2d6ca" stroke-width="1.5" stroke-linecap="round"><path d="M12 22V12"/><path d="M12 12C12 8 8 5 4 6c0 4 3 7 8 6z"/><path d="M12 12C12 8 16 5 20 6c0 4-3 7-8 6z"/></svg>
+    <!-- Cherry blossom -->
+    <svg viewBox="0 0 24 24" fill="none" stroke="#f5a7a5" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><path d="M12 2C10 6 8 8 12 10"/><path d="M12 2C14 6 16 8 12 10"/><path d="M22 12C18 10 16 8 14 12"/><path d="M22 12C18 14 16 16 14 12"/><path d="M12 22C14 18 16 16 12 14"/><path d="M12 22C10 18 8 16 12 14"/><path d="M2 12C6 14 8 16 10 12"/><path d="M2 12C6 10 8 8 10 12"/></svg>
+    <!-- Leaf -->
+    <svg viewBox="0 0 24 24" fill="none" stroke="#a2b890" stroke-width="1.5" stroke-linecap="round"><path d="M17 8C8 10 5 14 5 19c3.5-1.5 6-4 8-8"/><path d="M5 19C5 19 7 11 19 4c0 6-2 12-14 15z"/></svg>
+    <!-- Rose / flower -->
+    <svg viewBox="0 0 24 24" fill="none" stroke="#f0a0a0" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 4C12 4 15 7 12 9C9 7 12 4 12 4Z"/><path d="M20 12C20 12 17 15 15 12C17 9 20 12 20 12Z"/><path d="M12 20C12 20 9 17 12 15C15 17 12 20 12 20Z"/><path d="M4 12C4 12 7 9 9 12C7 15 4 12 4 12Z"/></svg>
+  </div>
+</div>
+
+<!-- ===================== CHECK-IN ===================== -->
+<div class="screen" id="s-checkin">
+  <div class="text-center" style="margin-bottom:30px;">
+    <div style="font-size:46px;margin-bottom:10px;">👋</div>
+    <h1 class="hero">入館登録</h1>
+    <p class="sub" id="ci-time" style="margin-top:6px;"></p>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label class="field-label">✏️ お名前</label>
+      <input id="ci-name" type="text" placeholder="山田 太郎" />
+      <div class="error-msg" id="ci-err">お名前を入力してください</div>
+    </div>
+    <div class="field">
+      <label class="field-label">🌿 今日の体調</label>
+      <div class="cond-wrap">
+        <button class="cond-btn sel-good"  id="cb-good"   onclick="selCond('good')">  <span class="icon">😊</span>良い</button>
+        <button class="cond-btn"           id="cb-normal" onclick="selCond('normal')"><span class="icon">😐</span>普通</button>
+        <button class="cond-btn"           id="cb-bad"    onclick="selCond('bad')">   <span class="icon">😞</span>悪い</button>
+      </div>
+    </div>
+    <button class="btn btn-yellow" id="ci-submit" onclick="submitCheckin()">入館登録する →</button>
+  </div>
+  <div class="text-center" style="margin-top:14px;">
+    <button class="btn-ghost" onclick="show('s-home')">← 戻る</button>
+  </div>
+</div>
+
+<!-- ===================== DONE ===================== -->
+<div class="screen" id="s-done">
+  <div class="text-center" style="padding:60px 0;">
+    <div style="font-size:72px;margin-bottom:18px;">🎉</div>
+    <h1 class="hero" style="color:var(--green-d);">登録完了！</h1>
+    <p id="done-name" style="margin-top:10px;font-size:16px;font-weight:600;color:var(--text-sub);"></p>
+    <div id="done-cond" style="margin-top:16px;"></div>
+    <p class="sub" style="margin-top:22px;">素敵な一日を！🌿</p>
+    <button class="btn-ghost" style="margin-top:34px;" onclick="resetCheckin()">← もう一度入力する</button>
+  </div>
+</div>
+
+<!-- ===================== LOGIN ===================== -->
+<div class="screen" id="s-login">
+  <div class="text-center" style="margin-bottom:30px;">
+    <div style="font-size:44px;margin-bottom:10px;">🔑</div>
+    <h1 class="hero">管理者ログイン</h1>
+  </div>
+  <div class="card">
+    <div class="field">
+      <label class="field-label">パスワード</label>
+      <input id="login-pass" type="password" placeholder="パスワードを入力"
+             onkeydown="if(event.key==='Enter')doLogin()" />
+      <div class="error-msg" id="login-err">パスワードが違います</div>
+    </div>
+    <button class="btn btn-blue" onclick="doLogin()">ログイン</button>
+    <p class="sub" style="text-align:center;margin-top:14px;font-size:11px;">初期パスワード: admin1234</p>
+  </div>
+  <div class="text-center" style="margin-top:14px;">
+    <button class="btn-ghost" onclick="show('s-home')">← 戻る</button>
+  </div>
+</div>
+
+<!-- ===================== ADMIN ===================== -->
+<div class="screen screen-wide" id="s-admin">
+  <div class="row" style="margin-bottom:24px;">
+    <div>
+      <h1 class="hero" style="font-size:20px;">管理ダッシュボード</h1>
+      <p class="sub" style="font-size:12px;margin-top:3px;" id="admin-updated"></p>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-ghost btn-sm" onclick="loadAdmin()">🔄 更新</button>
+      <button class="btn-ghost btn-sm" onclick="doLogout()">ログアウト</button>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn active" id="tab-dash"    onclick="switchTab('dash')">📊 ダッシュボード</button>
+    <button class="nav-btn"        id="tab-log"     onclick="switchTab('log')">📋 入館ログ</button>
+    <button class="nav-btn"        id="tab-persons" onclick="switchTab('persons')">👥 個人管理</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="pane-dash">
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-num" id="st-today"  style="color:var(--yellow-d);">0</div><div class="stat-lbl">本日の入館</div></div>
+      <div class="stat-box"><div class="stat-num" id="st-total"  style="color:var(--blue-d);">0</div><div class="stat-lbl">累計回数</div></div>
+      <div class="stat-box"><div class="stat-num" id="st-people" style="color:var(--brown);">0</div><div class="stat-lbl">登録人数</div></div>
+    </div>
+    <div class="card card-green" style="margin-bottom:18px;">
+      <h2 class="sec">🌿 今日の体調内訳</h2>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+        <div style="text-align:center;padding:14px 6px;background:var(--white);border-radius:16px;border:1.5px solid #c8e8e0;box-shadow:var(--shadow-sm);">
+          <div style="font-size:24px;">😊</div><div id="c-good"   style="font-size:24px;font-weight:700;color:var(--green-d);font-family:'Caveat',cursive;">0</div><div class="sub">良い</div>
+        </div>
+        <div style="text-align:center;padding:14px 6px;background:var(--white);border-radius:16px;border:1.5px solid var(--blue);box-shadow:var(--shadow-sm);">
+          <div style="font-size:24px;">😐</div><div id="c-normal" style="font-size:24px;font-weight:700;color:var(--blue-d);font-family:'Caveat',cursive;">0</div><div class="sub">普通</div>
+        </div>
+        <div style="text-align:center;padding:14px 6px;background:var(--white);border-radius:16px;border:1.5px solid var(--pink);box-shadow:var(--shadow-sm);">
+          <div style="font-size:24px;">😞</div><div id="c-bad"    style="font-size:24px;font-weight:700;color:var(--pink-d);font-family:'Caveat',cursive;">0</div><div class="sub">悪い</div>
         </div>
       </div>
-      <p class="text-center" style="font-size:12px; color:var(--text-sub); margin-bottom:20px;">
-        このQRコードをスキャンして入館登録を行ってください
-      </p>
-      <button class="btn btn-yellow" onclick="navigateTo('s-checkin')">
-        <span>🖋️ 入館フォームを開く</span>
-      </button>
     </div>
-
-    <div class="text-center">
-      <button class="btn-ghost" onclick="navigateTo('s-login')">管理者ログイン</button>
+    <div class="card">
+      <h2 class="sec">📅 直近7日間の入館数</h2>
+      <div id="bar-chart"></div>
     </div>
   </div>
 
-  <!-- CHECK-IN SCREEN -->
-  <div class="screen" id="s-checkin">
-    <div class="text-center" style="margin-bottom:32px;">
-      <span style="font-size:40px;">👋</span>
-      <h2 style="font-family:'Kaisei Opti';">入館のご登録</h2>
-      <p id="js-current-time" style="font-size:13px; color:var(--text-hint);"></p>
-    </div>
-
+  <!-- Log -->
+  <div id="pane-log" style="display:none;">
     <div class="card">
-      <div class="input-group">
-        <label class="label">お名前</label>
-        <input type="text" id="js-input-name" placeholder="例：山田 太郎" maxlength="20">
-      </div>
+      <h2 class="sec">📋 全入館ログ（新しい順）</h2>
+      <div id="log-list"><p class="sub">まだ記録がありません</p></div>
+    </div>
+  </div>
 
-      <div class="input-group">
-        <label class="label">今日の体調はいかがですか？</label>
-        <div class="cond-picker">
-          <div class="cond-option good active" onclick="selectCondition('good')" id="cond-good">
-            <span class="emoji">😊</span><span style="font-size:12px;">良い</span>
-          </div>
-          <div class="cond-option normal" onclick="selectCondition('normal')" id="cond-normal">
-            <span class="emoji">😐</span><span style="font-size:12px;">普通</span>
-          </div>
-          <div class="cond-option bad" onclick="selectCondition('bad')" id="cond-bad">
-            <span class="emoji">😞</span><span style="font-size:12px;">悪い</span>
-          </div>
+  <!-- Persons -->
+  <div id="pane-persons" style="display:none;">
+    <div id="persons-list-view">
+      <div class="card">
+        <h2 class="sec" id="persons-count">👥 登録済み (0名)</h2>
+        <div id="persons-list"><p class="sub">まだ登録がありません</p></div>
+      </div>
+    </div>
+    <div id="person-detail-view" style="display:none;"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ⚙️  Google Apps Script の URL をここに貼り付けてください
+// ============================================================
+const GAS_URL = "https://script.google.com/macros/s/AKfycbya44S-3vKO9UnWhyeq7m_d9bnu7Ckzmw-7c3F_PkmKlrv8gTuRfcntxfKM4fADNP92NQ/exec";
+// ============================================================
+
+const PASS = "admin1234";
+const AV_COLORS = ["av-brown","av-blue","av-pink"];
+let selCondVal = "good";
+let logs = [], persons = {};
+const isDemo = GAS_URL === "YOUR_GAS_URL_HERE";
+
+function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch{ return null; } }
+function lsSet(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+
+async function apiCall(action, payload={}){
+  if(isDemo) return demoApi(action,payload);
+  const res = await fetch(GAS_URL,{method:"POST",body:JSON.stringify({action,...payload})});
+  return res.json();
+}
+
+function demoApi(action,payload){
+  if(action==="checkin"){
+    const ls=lsGet("vms_logs")||[]; const ps=lsGet("vms_persons")||{};
+    const e={id:Date.now(),name:payload.name,condition:payload.condition,timestamp:nowStr(),date:todayStr()};
+    ls.push(e); lsSet("vms_logs",ls);
+    if(!ps[payload.name]) ps[payload.name]={name:payload.name,visits:[],notes:""};
+    ps[payload.name].visits.push({timestamp:e.timestamp,date:e.date,condition:payload.condition});
+    lsSet("vms_persons",ps); return {ok:true};
+  }
+  if(action==="getLogs")    return {ok:true,data:(lsGet("vms_logs")||[]).reverse()};
+  if(action==="getPersons") return {ok:true,data:lsGet("vms_persons")||{}};
+  if(action==="saveNotes"){
+    const ps=lsGet("vms_persons")||{};
+    if(ps[payload.name]) ps[payload.name].notes=payload.notes;
+    lsSet("vms_persons",ps); return {ok:true};
+  }
+  return {ok:false};
+}
+
+function nowStr(){ return new Date().toLocaleString("ja-JP"); }
+function todayStr(){
+  return new Date().toLocaleDateString("ja-JP",{year:"numeric",month:"2-digit",day:"2-digit"}).replace(/\//g,"-");
+}
+function condTag(c){
+  const m={good:["tag-good","😊 良い"],normal:["tag-normal","😐 普通"],bad:["tag-bad","😞 悪い"]};
+  const [cls,lbl]=m[c]||["tag-good","😊 良い"];
+  return `<span class="tag ${cls}">${lbl}</span>`;
+}
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0,0);
+  if(id==="s-checkin") document.getElementById("ci-time").textContent=new Date().toLocaleString("ja-JP");
+  if(id==="s-admin")   loadAdmin();
+}
+
+(function init(){
+  const base = window.location.origin + window.location.pathname;
+  const url  = base + "?mode=checkin";
+  document.getElementById("qr-url").textContent = url;
+  document.getElementById("qr-img").src =
+    `https://api.qrserver.com/v1/create-qr-code/?size=168x168&data=${encodeURIComponent(url)}&color=7a5c3a&bgcolor=fffdf0`;
+  if(new URLSearchParams(location.search).get("mode")==="checkin") show("s-checkin");
+  if(!isDemo){
+    const b=document.getElementById("banner");
+    b.textContent="✅ Google スプレッドシートと連携中";
+    b.classList.add("connected");
+  }
+})();
+
+function selCond(c){
+  selCondVal=c;
+  ["good","normal","bad"].forEach(k=>{
+    document.getElementById("cb-"+k).className="cond-btn"+(k===c?" sel-"+k:"");
+  });
+}
+
+async function submitCheckin(){
+  const name=document.getElementById("ci-name").value.trim();
+  const err=document.getElementById("ci-err");
+  if(!name){ err.style.display="block"; return; }
+  err.style.display="none";
+  const btn=document.getElementById("ci-submit");
+  btn.textContent="送信中... 🌿"; btn.disabled=true;
+  try{
+    await apiCall("checkin",{name,condition:selCondVal});
+    document.getElementById("done-name").textContent=name+" さん、ようこそ！";
+    document.getElementById("done-cond").innerHTML=condTag(selCondVal);
+    show("s-done");
+  }catch(e){ alert("送信に失敗しました。もう一度お試しください。"); }
+  btn.textContent="入館登録する →"; btn.disabled=false;
+}
+
+function resetCheckin(){
+  document.getElementById("ci-name").value=""; selCond("good"); show("s-checkin");
+}
+
+function doLogin(){
+  const p=document.getElementById("login-pass").value;
+  const err=document.getElementById("login-err");
+  if(p===PASS){ err.style.display="none"; document.getElementById("login-pass").value=""; show("s-admin"); }
+  else err.style.display="block";
+}
+function doLogout(){ show("s-home"); }
+
+async function loadAdmin(){
+  const [lr,pr]=await Promise.all([apiCall("getLogs"),apiCall("getPersons")]);
+  logs=lr.data||[]; persons=pr.data||{};
+  document.getElementById("admin-updated").textContent="最終更新: "+new Date().toLocaleTimeString("ja-JP");
+  const td=todayStr(); const tl=logs.filter(l=>l.date===td);
+  document.getElementById("st-today").textContent  = tl.length;
+  document.getElementById("st-total").textContent  = logs.length;
+  document.getElementById("st-people").textContent = Object.keys(persons).length;
+  const cc={good:0,normal:0,bad:0};
+  tl.forEach(l=>{ if(cc[l.condition]!==undefined) cc[l.condition]++; });
+  document.getElementById("c-good").textContent   = cc.good;
+  document.getElementById("c-normal").textContent = cc.normal;
+  document.getElementById("c-bad").textContent    = cc.bad;
+
+  const byDate={};
+  logs.forEach(l=>{ byDate[l.date]=(byDate[l.date]||0)+1; });
+  const recent=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,7);
+  const max=Math.max(...recent.map(d=>d[1]),1);
+  document.getElementById("bar-chart").innerHTML=recent.length===0
+    ?'<p class="sub">データがありません</p>'
+    :recent.map(([date,count])=>`<div class="bar-row"><span class="bar-date">${date}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round((count/max)*100)}%"><span>${count}人</span></div></div></div>`).join("");
+
+  document.getElementById("log-list").innerHTML=logs.length===0
+    ?'<p class="sub">まだ記録がありません</p>'
+    :logs.map(l=>`<div class="log-item"><div style="display:flex;align-items:center;gap:10px;"><div class="avatar av-brown" style="width:32px;height:32px;font-size:13px;">${(l.name||"?")[0]}</div><div><div style="font-weight:600;font-size:14px;">${l.name}</div>${condTag(l.condition)}</div></div><small>${l.timestamp}</small></div>`).join("");
+
+  const keys=Object.keys(persons);
+  document.getElementById("persons-count").textContent=`👥 登録済み (${keys.length}名)`;
+  document.getElementById("persons-list").innerHTML=keys.length===0
+    ?'<p class="sub">まだ登録がありません</p>'
+    :keys.map((name,i)=>{
+      const p=persons[name]; const av=AV_COLORS[i%3];
+      return `<div class="person-row" onclick="showPersonDetail('${name.replace(/'/g,"\\'")}')"><div style="display:flex;align-items:center;gap:12px;"><div class="avatar ${av}">${name[0]}</div><div><div style="font-weight:600;font-size:15px;">${name}</div><div class="sub" style="font-size:12px;margin-top:2px;">来館 ${p.visits?.length||0} 回</div></div></div><span style="color:var(--text-hint);font-size:18px;">→</span></div>`;
+    }).join("");
+}
+
+function switchTab(t){
+  ["dash","log","persons"].forEach(k=>{
+    document.getElementById("pane-"+k).style.display=k===t?"block":"none";
+    document.getElementById("tab-"+k).className="nav-btn"+(k===t?" active":"");
+  });
+}
+
+function showPersonDetail(name){
+  const p=persons[name]; if(!p) return;
+  document.getElementById("persons-list-view").style.display="none";
+  const dv=document.getElementById("person-detail-view"); dv.style.display="block";
+  const byDate={};
+  (p.visits||[]).forEach(v=>{ if(!byDate[v.date]) byDate[v.date]=[]; byDate[v.date].push(v); });
+  const histHtml=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).map(([date,visits])=>`<div style="margin-bottom:14px;"><span class="visit-date-badge">${date}</span>${visits.map(v=>`<div class="visit-row">${condTag(v.condition)}<small>${v.timestamp}</small></div>`).join("")}</div>`).join("")||'<p class="sub">履歴がありません</p>';
+  const last=p.visits?.at(-1);
+  const lastHtml=last?`<div class="detail-meta">最終来館: <strong>${last.timestamp}</strong>　${condTag(last.condition)}</div>`:"";
+  dv.innerHTML=`
+    <button class="btn-ghost btn-sm" style="margin-bottom:20px;" onclick="backToList()">← 一覧へ戻る</button>
+    <div class="card" style="margin-bottom:16px;">
+      <div style="display:flex;gap:16px;align-items:center;">
+        <div class="avatar av-brown" style="width:56px;height:56px;font-size:22px;">${name[0]}</div>
+        <div>
+          <div style="font-size:22px;font-weight:700;font-family:'Kaisei Opti',serif;">${name}</div>
+          <div class="sub" style="margin-top:4px;">合計 ${p.visits?.length||0} 回来館</div>
         </div>
-      </div>
-
-      <button class="btn btn-yellow" id="js-btn-submit" onclick="handleCheckin()">
-        <div class="loader" id="js-loader"></div>
-        <span id="js-btn-text">入館を記録する</span>
-      </button>
+      </div>${lastHtml}
     </div>
-
-    <div class="text-center">
-      <button class="btn-ghost" onclick="navigateTo('s-home')">戻る</button>
-    </div>
-  </div>
-
-  <!-- DONE SCREEN -->
-  <div class="screen" id="s-done">
-    <div class="card text-center" style="padding:60px 24px;">
-      <span style="font-size:64px; display:block; margin-bottom:20px;">✨</span>
-      <h2 style="font-family:'Kaisei Opti'; color:var(--green-d);">登録が完了しました</h2>
-      <p id="js-done-msg" style="margin:16px 0; font-weight:600;"></p>
-      <p style="color:var(--text-hint); font-size:14px;">今日も良い一日になりますように。🌿</p>
-      
-      <button class="btn btn-blue mt-4" style="margin-top:40px;" onclick="navigateTo('s-home')">トップへ戻る</button>
-    </div>
-  </div>
-
-  <!-- LOGIN SCREEN -->
-  <div class="screen" id="s-login">
-    <div class="text-center" style="margin-bottom:32px;">
-      <span style="font-size:40px;">🔑</span>
-      <h2 style="font-family:'Kaisei Opti';">管理者認証</h2>
+    <div class="card card-blue" style="margin-bottom:16px;">
+      <h2 class="sec">📝 メモ・追加情報</h2>
+      <textarea id="notes-area" rows="4" placeholder="例: バドミントンが好き、毎週火曜来館...">${p.notes||""}</textarea>
+      <button class="btn btn-green" id="save-btn" style="margin-top:14px;" onclick="saveNotes('${name.replace(/'/g,"\\'")}')">💾 保存する</button>
     </div>
     <div class="card">
-      <div class="input-group">
-        <label class="label">パスワード</label>
-        <input type="password" id="js-input-pass" placeholder="••••••••">
-      </div>
-      <button class="btn btn-blue" onclick="handleLogin()">ログイン</button>
-    </div>
-    <div class="text-center">
-      <button class="btn-ghost" onclick="navigateTo('s-home')">戻る</button>
-    </div>
-  </div>
+      <h2 class="sec">🗓️ 来館履歴</h2>${histHtml}
+    </div>`;
+}
 
-  <!-- ADMIN DASHBOARD -->
-  <div class="screen screen-wide" id="s-admin">
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
-      <div>
-        <h2 style="font-family:'Kaisei Opti';">管理ダッシュボード</h2>
-        <p style="font-size:12px; color:var(--text-hint);">データの確認と管理が行えます</p>
-      </div>
-      <button class="btn-ghost" style="padding:6px 16px; font-size:12px;" onclick="handleLogout()">ログアウト</button>
-    </div>
+function backToList(){
+  document.getElementById("person-detail-view").style.display="none";
+  document.getElementById("persons-list-view").style.display="block";
+}
 
-    <div class="stat-row">
-      <div class="stat-card">
-        <div class="stat-val" id="js-stat-today" style="color:var(--yellow-d);">0</div>
-        <div class="stat-label">今日の入館</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="js-stat-total" style="color:var(--blue-d);">0</div>
-        <div class="stat-label">累計人数</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="js-stat-unique" style="color:var(--accent);">0</div>
-        <div class="stat-label">登録者数</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 style="font-size:14px; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
-        📋 最近の来館者
-        <span style="font-size:10px; font-weight:normal; background:var(--bg-alt); padding:2px 8px; border-radius:4px;">自動更新</span>
-      </h3>
-      <div id="js-log-list">
-        <!-- Logs injected here -->
-      </div>
-    </div>
-  </div>
-
-  <script>
-    /**
-     * CONFIG & STATE
-     */
-    const CONFIG = {
-      GAS_URL: "", // スプレッドシート連携時にURLを入力
-      ADMIN_PASS: "admin1234",
-      QR_COLOR: "7a5c3a",
-      QR_BG: "ffffff"
-    };
-
-    let state = {
-      currentCondition: 'good',
-      logs: JSON.parse(localStorage.getItem('vms_logs') || '[]'),
-      isSubmitting: false
-    };
-
-    /**
-     * DOM HELPERS
-     */
-    const $ = id => document.getElementById(id);
-    const render = (id, html) => $(id).innerHTML = html;
-
-    /**
-     * CORE LOGIC
-     */
-    function init() {
-      // QRコード生成
-      const currentUrl = window.location.href.split('?')[0];
-      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}&color=${CONFIG.QR_COLOR}&bgcolor=${CONFIG.QR_BG}`;
-      $('js-qr-img').src = qrUrl;
-
-      // URLパラメータチェック
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('mode') === 'checkin') navigateTo('s-checkin');
-
-      // 時刻更新
-      setInterval(() => {
-        const now = new Date();
-        $('js-current-time').textContent = now.toLocaleString('ja-JP', { dateStyle: 'medium', timeStyle: 'short' });
-      }, 1000);
-    }
-
-    function navigateTo(screenId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      $(screenId).classList.add('active');
-      window.scrollTo(0, 0);
-
-      if (screenId === 's-admin') refreshAdminData();
-    }
-
-    function selectCondition(val) {
-      state.currentCondition = val;
-      document.querySelectorAll('.cond-option').forEach(opt => opt.classList.remove('active'));
-      $(`cond-${val}`).classList.add('active');
-    }
-
-    async function handleCheckin() {
-      const name = $('js-input-name').value.trim();
-      if (!name) return alert('お名前を入力してください');
-      if (state.isSubmitting) return;
-
-      setLoading(true);
-
-      const entry = {
-        id: Date.now(),
-        name: name,
-        condition: state.currentCondition,
-        timestamp: new Date().toLocaleString('ja-JP'),
-        date: new Date().toLocaleDateString('ja-JP')
-      };
-
-      // シミュレーション遅延
-      await new Promise(r => setTimeout(r, 1000));
-
-      // データの保存
-      state.logs.unshift(entry);
-      CONFIG.GAS_https://script.google.com/macros/library/d/1kZXAC_V9-i3cEpj-lcmGjoFMlGuz2jSVvZpgz24FzWzusGyFxFanuPxD/2('vms_logs', JSON.stringify(state.logs));
-
-      $('js-done-msg').textContent = `${name} 様`;
-      setLoading(false);
-      navigateTo('s-done');
-      
-      // 入力リセット
-      $('js-input-name').value = '';
-      selectCondition('good');
-    }
-
-    function setLoading(val) {
-      state.isSubmitting = val;
-      $('js-loader').style.display = val ? 'block' : 'none';
-      $('js-btn-text').style.display = val ? 'none' : 'block';
-      $('js-btn-submit').disabled = val;
-    }
-
-    function handleLogin() {
-      const pass = $('js-input-pass').value;
-      if (pass === CONFIG.ADMIN_PASS) {
-        $('js-input-pass').value = '';
-        navigateTo('s-admin');
-      } else {
-        alert('パスワードが正しくありません');
-      }
-    }
-
-    function handleLogout() {
-      navigateTo('s-home');
-    }
-
-    function refreshAdminData() {
-      const today = new Date().toLocaleDateString('ja-JP');
-      const todayLogs = state.logs.filter(l => l.date === today);
-      const uniqueNames = new Set(state.logs.map(l => l.name));
-
-      $('js-stat-today').textContent = todayLogs.length;
-      $('js-stat-total').textContent = state.logs.length;
-      $('js-stat-unique').textContent = uniqueNames.size;
-
-      const logHtml = state.logs.length === 0 
-        ? '<p style="text-align:center; padding:40px; color:var(--text-hint);">履歴がありません</p>'
-        : state.logs.slice(0, 20).map(log => `
-          <div class="log-row">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <div class="avatar">${log.name[0]}</div>
-              <div>
-                <div style="font-weight:600; font-size:14px;">${log.name}</div>
-                <div style="font-size:11px; color:var(--text-hint);">${log.timestamp}</div>
-              </div>
-            </div>
-            <div>
-              ${getConditionTag(log.condition)}
-            </div>
-          </div>
-        `).join('');
-      
-      render('js-log-list', logHtml);
-    }
-
-    function getConditionTag(c) {
-      const labels = { good: ['#5aaba0', '😊 良い'], normal: ['#5ab0c8', '😐 普通'], bad: ['#d97270', '😞 悪い'] };
-      const [color, text] = labels[c] || labels.good;
-      return `<span class="tag" style="color:${color}">${text}</span>`;
-    }
-
-    // 起動
-    window.onload = init;
-  </script>
+async function saveNotes(name){
+  const notes=document.getElementById("notes-area").value;
+  await apiCall("saveNotes",{name,notes});
+  persons[name].notes=notes;
+  const btn=document.getElementById("save-btn");
+  btn.textContent="✅ 保存しました！"; btn.style.background="var(--green-d)"; btn.style.color="var(--white)";
+  setTimeout(()=>{ btn.textContent="💾 保存する"; btn.style.background=""; btn.style.color=""; },2200);
+}
+</script>
 </body>
 </html>
