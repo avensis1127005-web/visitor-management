@@ -6,235 +6,193 @@
   <title>入館管理システム</title>
   <link href="https://fonts.googleapis.com/css2?family=Kaisei+Opti:wght@400;700&family=Caveat:wght@400;600;700&family=Klee+One:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    /* ===== TOKENS ===== */
     :root {
-      /* ---- 指定カラーパレット ---- */
-      --bg:         #fdf8f4;   /* 極薄ベージュ背景 */
-      --bg2:        #faf3ec;   /* やや濃いベージュ（カード内背景など） */
-      --card:       #ffffff;
-      --border:     #f0c8c8;   /* 薄ピンク枠線 */
-      --border2:    #ecddd5;   /* サブ枠線 */
-      --text:       #4a4a4a;   /* 柔らかグレー文字 */
-      --text-sub:   #8a7868;   /* サブ文字 */
-      --text-hint:  #bfb0a0;   /* ヒント文字 */
-      --brown:      #7a5c3a;   /* QRコード・アクセントブラウン */
-      --yellow:     #f5c842;   /* メインアクションボタン */
-      --yellow-d:   #c9a020;   /* 黄色ダーク */
-      --blue:       #9ed8e8;   /* サブアクションボタン */
-      --blue-d:     #56b0cc;   /* 水色ダーク */
-      --pink:       #f5a7a5;   /* ピンクアクセント */
-      --pink-d:     #d97270;
-      --green:      #a2d6ca;
-      --green-d:    #5aaba0;
-      --white:      #ffffff;
-      --shadow:     0 4px 24px rgba(122,92,58,0.09);
-      --shadow-sm:  0 2px 12px rgba(122,92,58,0.07);
+      --bg:        #fdf8f4;
+      --bg2:       #faf3ec;
+      --card:      #ffffff;
+      --border:    #f0c8c8;
+      --border2:   #ecddd5;
+      --text:      #4a4a4a;
+      --text-sub:  #8a7868;
+      --text-hint: #bfb0a0;
+      --brown:     #7a5c3a;
+      --yellow:    #f5c842;
+      --yellow-d:  #c9a020;
+      --blue:      #9ed8e8;
+      --blue-d:    #56b0cc;
+      --pink:      #f5a7a5;
+      --pink-d:    #d97270;
+      --green:     #a2d6ca;
+      --green-d:   #5aaba0;
+      --white:     #ffffff;
+      --shadow:    0 4px 24px rgba(122,92,58,0.09);
+      --shadow-sm: 0 2px 12px rgba(122,92,58,0.07);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Klee One', 'Kaisei Opti', 'Noto Sans JP', serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+    body { font-family: 'Klee One','Kaisei Opti','Noto Sans JP',serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-    /* ===== SCREENS ===== */
-    .screen { display: none; max-width: 540px; margin: 0 auto; padding: 36px 22px 80px; animation: fadeUp .4s ease; }
+    /* SCREENS */
+    .screen { display: none; max-width: 560px; margin: 0 auto; padding: 32px 20px 80px; animation: fadeUp .35s ease; }
     .screen.active { display: block; }
-    .screen-wide { max-width: 740px; }
-    @keyframes fadeUp { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:translateY(0) } }
+    .screen-wide { max-width: 780px; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(12px) } to { opacity:1; transform:translateY(0) } }
 
-    /* ===== BANNER ===== */
-    .banner {
-      background: var(--bg2); color: var(--text-sub);
-      padding: 9px 20px; text-align: center;
-      font-size: 12px; font-family: 'Klee One', serif;
-      border-bottom: 1px solid var(--border2);
-      position: sticky; top: 0; z-index: 100;
-      letter-spacing: .3px;
-    }
+    /* BANNER */
+    .banner { background: var(--bg2); color: var(--text-sub); padding: 8px 20px; text-align: center; font-size: 12px; border-bottom: 1px solid var(--border2); position: sticky; top: 0; z-index: 100; }
     .banner.connected { background: #f0f9f5; color: var(--green-d); border-color: var(--green); }
 
-    /* ===== CARDS ===== */
-    .card {
-      background: var(--card); border-radius: 24px;
-      padding: 28px; border: 1.5px solid var(--border);
-      box-shadow: var(--shadow); margin-bottom: 20px;
-    }
-    .card-yellow { border-color: #f5e090; background: #fffdf0; }
-    .card-blue   { border-color: #c8eaf5; background: #f0faff; }
+    /* CARDS */
+    .card { background: var(--card); border-radius: 22px; padding: 24px; border: 1.5px solid var(--border); box-shadow: var(--shadow); margin-bottom: 18px; }
+    .card-yellow { border-color: #f0d870; background: #fffef5; }
+    .card-blue   { border-color: #b8e8f5; background: #f5fbff; }
+    .card-green  { border-color: #b8e0d8; background: #f5fdf8; }
     .card-pink   { border-color: var(--border); background: #fff8f8; }
-    .card-green  { border-color: #c8e8e0; background: #f5fdf8; }
 
-    /* ===== BUTTONS ===== */
-    button { cursor: pointer; border: none; font-family: 'Klee One', serif; font-weight: 600; transition: all .2s ease; letter-spacing: .5px; }
-    .btn { border-radius: 99px; padding: 15px 28px; font-size: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-sm); }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(122,92,58,0.14); }
-    .btn:active { transform: translateY(0); }
+    /* BUTTONS */
+    button { cursor: pointer; border: none; font-family: 'Klee One',serif; font-weight: 600; transition: all .2s ease; }
+    .btn { border-radius: 99px; padding: 14px 28px; font-size: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-sm); }
+    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(122,92,58,0.15); }
+    .btn:disabled { opacity: .6; cursor: default; }
     .btn-yellow { background: var(--yellow); color: #5a4010; border: 2px solid var(--yellow-d); }
-    .btn-yellow:hover { background: #f8d050; }
     .btn-blue   { background: var(--blue);   color: #1a4a5a; border: 2px solid var(--blue-d); }
-    .btn-blue:hover { background: #b8e8f5; }
     .btn-green  { background: var(--green);  color: #1a4a40; border: 2px solid var(--green-d); }
-    .btn-green:hover { background: #b8e0d8; }
-    .btn-ghost  { background: var(--white); color: var(--brown); border: 1.5px solid var(--border); border-radius: 99px; padding: 11px 24px; font-size: 14px; box-shadow: var(--shadow-sm); }
+    .btn-ghost  { background: var(--white); color: var(--brown); border: 1.5px solid var(--border2); border-radius: 99px; padding: 10px 22px; font-size: 14px; box-shadow: var(--shadow-sm); display: inline-flex; align-items: center; gap: 6px; }
     .btn-ghost:hover { background: var(--bg2); }
-    .btn-sm { padding: 9px 20px; font-size: 13px; width: auto; }
+    .btn-sm { padding: 8px 18px !important; font-size: 13px !important; width: auto !important; }
 
-    /* ===== INPUTS ===== */
-    input, select, textarea {
-      background: var(--bg); border: 1.5px solid var(--border2);
-      border-radius: 16px; padding: 14px 18px; color: var(--text);
-      font-family: 'Klee One', serif; font-size: 15px; width: 100%;
-      outline: none; transition: border .2s, background .2s, box-shadow .2s;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--blue-d); background: #f0faff;
-      box-shadow: 0 0 0 3px rgba(158,216,232,.25);
-    }
+    /* INPUTS */
+    input, select, textarea { background: var(--bg); border: 1.5px solid var(--border2); border-radius: 14px; padding: 12px 16px; color: var(--text); font-family: 'Klee One',serif; font-size: 15px; width: 100%; outline: none; transition: all .2s; }
+    input:focus, select:focus, textarea:focus { border-color: var(--blue-d); background: #f5fbff; box-shadow: 0 0 0 3px rgba(158,216,232,.2); }
     textarea { resize: vertical; }
-    .field { margin-bottom: 20px; }
-    .field-label { font-size: 13px; color: var(--text-sub); font-weight: 600; display: block; margin-bottom: 9px; }
-    .error-msg { color: var(--pink-d); font-size: 12px; margin-top: 6px; display: none; }
+    .field { margin-bottom: 18px; }
+    .field-label { font-size: 13px; color: var(--text-sub); font-weight: 600; display: block; margin-bottom: 8px; }
+    .error-msg { color: var(--pink-d); font-size: 12px; margin-top: 5px; display: none; }
 
-    /* ===== TAGS ===== */
-    .tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 13px; border-radius: 99px; font-size: 12px; font-weight: 600; font-family: 'Klee One', serif; }
-    .tag-good   { background: #f0fdf8; color: var(--green-d); border: 1px solid var(--green); }
+    /* TAGS */
+    .tag { display: inline-flex; align-items: center; gap: 3px; padding: 3px 11px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+    .tag-good   { background: #edfaf5; color: var(--green-d); border: 1px solid var(--green); }
     .tag-normal { background: #f0faff; color: var(--blue-d);  border: 1px solid var(--blue); }
     .tag-bad    { background: #fff0f0; color: var(--pink-d);  border: 1px solid var(--pink); }
 
-    /* ===== CONDITION BUTTONS ===== */
-    .cond-wrap { display: flex; gap: 12px; }
-    .cond-btn {
-      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;
-      padding: 16px 8px; border-radius: 20px; border: 2px solid var(--border2);
-      background: var(--white); color: var(--text-hint);
-      font-family: 'Klee One', serif; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: all .2s; box-shadow: var(--shadow-sm);
-    }
-    .cond-btn .icon { font-size: 28px; line-height: 1; }
+    /* CONDITION BUTTONS */
+    .cond-wrap { display: flex; gap: 10px; }
+    .cond-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:7px; padding:15px 6px; border-radius:18px; border:2px solid var(--border2); background:var(--white); color:var(--text-hint); font-family:'Klee One',serif; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; box-shadow:var(--shadow-sm); }
+    .cond-btn .icon { font-size:26px; line-height:1; }
     .cond-btn:hover { transform: translateY(-2px); }
-    .cond-btn.sel-good   { background: #f0fdf8; border-color: var(--green-d); color: var(--green-d); box-shadow: 0 4px 14px rgba(90,171,160,.2); }
-    .cond-btn.sel-normal { background: #f0faff; border-color: var(--blue-d);  color: var(--blue-d);  box-shadow: 0 4px 14px rgba(90,176,200,.2); }
-    .cond-btn.sel-bad    { background: #fff0f0; border-color: var(--pink-d);  color: var(--pink-d);  box-shadow: 0 4px 14px rgba(217,114,112,.2); }
+    .cond-btn.sel-good   { background:#edfaf5; border-color:var(--green-d); color:var(--green-d); }
+    .cond-btn.sel-normal { background:#f0faff; border-color:var(--blue-d);  color:var(--blue-d); }
+    .cond-btn.sel-bad    { background:#fff0f0; border-color:var(--pink-d);  color:var(--pink-d); }
 
-    /* ===== NAV TABS ===== */
-    .nav { display: flex; gap: 8px; margin-bottom: 26px; flex-wrap: wrap; }
-    .nav-btn {
-      cursor: pointer; padding: 9px 18px; border-radius: 99px;
-      font-family: 'Klee One', serif; font-weight: 600; font-size: 13px;
-      border: 1.5px solid var(--border2); background: var(--white); color: var(--text-sub);
-      transition: all .15s; box-shadow: var(--shadow-sm);
-    }
-    .nav-btn.active { background: var(--brown); color: var(--white); border-color: var(--brown); }
-    .nav-btn:hover:not(.active) { background: var(--bg2); }
+    /* NAV TABS */
+    .nav { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
+    .nav-btn { cursor:pointer; padding:9px 18px; border-radius:99px; font-family:'Klee One',serif; font-weight:600; font-size:13px; border:1.5px solid var(--border2); background:var(--white); color:var(--text-sub); transition:all .15s; box-shadow:var(--shadow-sm); }
+    .nav-btn.active { background:var(--brown); color:var(--white); border-color:var(--brown); }
+    .nav-btn:hover:not(.active) { background:var(--bg2); }
 
-    /* ===== STATS ===== */
-    .stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
-    .stat-box  { background: var(--white); border-radius: 20px; padding: 18px 10px; text-align: center; border: 1.5px solid var(--border2); box-shadow: var(--shadow-sm); }
-    .stat-num  { font-size: 30px; font-weight: 700; font-family: 'Caveat', cursive; line-height: 1.1; }
-    .stat-lbl  { font-size: 11px; color: var(--text-hint); margin-top: 5px; }
+    /* STATS */
+    .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:18px; }
+    .stat-box  { background:var(--white); border-radius:18px; padding:16px 10px; text-align:center; border:1.5px solid var(--border2); box-shadow:var(--shadow-sm); position:relative; }
+    .stat-num  { font-size:32px; font-weight:700; font-family:'Caveat',cursive; line-height:1.1; }
+    .stat-lbl  { font-size:11px; color:var(--text-hint); margin-top:4px; }
 
-    /* ===== LOG / PERSON ROWS ===== */
-    .log-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 13px 16px; background: var(--bg2); border-radius: 16px;
-      margin-bottom: 10px; border: 1px solid var(--border2); flex-wrap: wrap; gap: 8px;
-    }
-    .person-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 16px 18px; background: var(--white); border-radius: 18px;
-      margin-bottom: 10px; border: 1.5px solid var(--border2); cursor: pointer;
-      transition: all .18s; box-shadow: var(--shadow-sm);
-    }
-    .person-row:hover { border-color: var(--blue); background: #f0faff; transform: translateY(-1px); }
+    /* PREV-YEAR BADGE */
+    .yoy-badge { font-size:9.5px; color:var(--text-hint); margin-top:5px; line-height:1.4; min-height:14px; }
+    .yoy-up   { color: var(--green-d); }
+    .yoy-down { color: var(--pink-d); }
+    .yoy-flat { color: var(--text-hint); }
 
-    /* ===== AVATAR ===== */
-    .avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; font-family: 'Caveat', cursive; flex-shrink: 0; }
-    .av-brown { background: #f5e8d8; color: var(--brown); border: 1.5px solid var(--border2); }
-    .av-blue  { background: #e0f4fc; color: var(--blue-d); border: 1.5px solid var(--blue); }
-    .av-pink  { background: #fde8e8; color: var(--pink-d); border: 1.5px solid var(--pink); }
+    /* LOG & PERSON ROWS */
+    .log-item { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:var(--bg2); border-radius:14px; margin-bottom:8px; border:1px solid var(--border2); flex-wrap:wrap; gap:8px; }
+    .person-row { display:flex; justify-content:space-between; align-items:center; padding:15px 18px; background:var(--white); border-radius:16px; margin-bottom:8px; border:1.5px solid var(--border2); cursor:pointer; transition:all .18s; box-shadow:var(--shadow-sm); }
+    .person-row:hover { border-color:var(--blue); background:#f5fbff; transform:translateY(-1px); }
 
-    /* ===== BAR CHART ===== */
-    .bar-row   { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .bar-date  { font-size: 12px; color: var(--text-sub); min-width: 88px; font-weight: 600; }
-    .bar-track { flex: 1; background: var(--bg2); border-radius: 99px; height: 22px; overflow: hidden; border: 1px solid var(--border2); }
-    .bar-fill  { background: linear-gradient(90deg, var(--yellow), var(--yellow-d)); height: 100%; border-radius: 99px; display: flex; align-items: center; padding-left: 10px; transition: width .6s ease; min-width: 36px; }
-    .bar-fill span { font-size: 11px; font-weight: 700; color: #5a4010; }
+    /* AVATAR */
+    .avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; font-family:'Caveat',cursive; flex-shrink:0; }
+    .av-brown { background:#f5e8d8; color:var(--brown); border:1.5px solid var(--border2); }
+    .av-blue  { background:#e0f4fc; color:var(--blue-d); border:1.5px solid var(--blue); }
+    .av-pink  { background:#fde8e8; color:var(--pink-d); border:1.5px solid var(--pink); }
 
-    /* ===== VISIT HISTORY ===== */
-    .visit-date-badge { font-size: 11px; color: var(--brown); font-weight: 600; padding: 3px 12px; background: #f5e8d8; border-radius: 99px; display: inline-block; margin-bottom: 8px; border: 1px solid var(--border2); }
-    .visit-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 14px; background: var(--bg2); border-radius: 12px; margin-bottom: 6px; border: 1px solid var(--border2); }
+    /* BAR CHART */
+    .bar-row   { display:flex; align-items:center; gap:10px; margin-bottom:9px; }
+    .bar-date  { font-size:12px; color:var(--text-sub); min-width:88px; font-weight:600; }
+    .bar-track { flex:1; background:var(--bg2); border-radius:99px; height:22px; overflow:hidden; border:1px solid var(--border2); }
+    .bar-fill  { background:linear-gradient(90deg,var(--yellow),var(--yellow-d)); height:100%; border-radius:99px; display:flex; align-items:center; padding-left:10px; transition:width .5s ease; min-width:32px; }
+    .bar-fill span { font-size:11px; font-weight:700; color:#5a4010; white-space:nowrap; }
 
-    /* ===== MISC ===== */
-    .text-center { text-align: center; }
-    h1.hero { font-size: 28px; font-weight: 700; font-family: 'Kaisei Opti', serif; color: var(--text); letter-spacing: .5px; }
-    h2.sec { font-size: 14px; font-weight: 600; color: var(--text-sub); margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
-    .sub { color: var(--text-hint); font-size: 13px; }
-    .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .detail-meta { padding: 12px 16px; background: #f0faff; border-radius: 14px; font-size: 13px; color: var(--text-sub); border: 1px solid var(--blue); margin-top: 12px; }
-    small { font-size: 11px; color: var(--text-hint); }
+    /* DATE SEARCH */
+    .date-search-wrap { display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:8px; align-items:end; margin-bottom:18px; }
+    .date-search-wrap select { padding:10px 12px; font-size:13px; }
+    .search-result { background:var(--bg2); border-radius:16px; padding:18px 20px; border:1px solid var(--border2); margin-top:4px; }
+    .search-result-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
+    .search-stat { text-align:center; background:var(--white); border-radius:14px; padding:14px 8px; border:1.5px solid var(--border2); }
+    .search-stat .num { font-size:26px; font-weight:700; font-family:'Caveat',cursive; }
+    .search-stat .lbl { font-size:11px; color:var(--text-hint); margin-top:3px; }
 
-    /* ===== HERO SVG LEAF ===== */
-    .hero-leaf { display: block; margin: 0 auto 14px; }
+    /* VISIT HISTORY */
+    .visit-date-badge { font-size:11px; color:var(--brown); font-weight:600; padding:3px 11px; background:#f5e8d8; border-radius:99px; display:inline-block; margin-bottom:7px; border:1px solid var(--border2); }
+    .visit-row { display:flex; justify-content:space-between; align-items:center; padding:9px 14px; background:var(--bg2); border-radius:11px; margin-bottom:5px; border:1px solid var(--border2); }
 
-    /* ===== FOOTER ICONS ===== */
-    .footer-icons { display: flex; justify-content: center; gap: 16px; margin-top: 32px; opacity: .55; }
-    .footer-icons svg { width: 28px; height: 28px; }
+    /* MISC */
+    .text-center { text-align:center; }
+    h1.hero { font-size:27px; font-weight:700; font-family:'Kaisei Opti',serif; letter-spacing:.5px; }
+    h2.sec  { font-size:14px; font-weight:600; color:var(--text-sub); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+    .sub    { color:var(--text-hint); font-size:13px; }
+    .row    { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+    .detail-meta { padding:11px 15px; background:#f5fbff; border-radius:13px; font-size:13px; color:var(--text-sub); border:1px solid var(--blue); margin-top:12px; }
+    small { font-size:11px; color:var(--text-hint); }
+    .divider { border:none; border-top:1px solid var(--border2); margin:16px 0; }
+    .footer-icons { display:flex; justify-content:center; gap:16px; margin-top:28px; opacity:.45; }
+    .footer-icons svg { width:26px; height:26px; }
+    .pill { display:inline-flex; align-items:center; gap:4px; padding:4px 12px; border-radius:99px; font-size:12px; font-weight:600; border:1px solid var(--border2); background:var(--white); color:var(--text-sub); }
+
+    /* SECTION HEADER with line */
+    .section-head { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .section-head h2 { font-size:14px; font-weight:600; color:var(--text-sub); white-space:nowrap; margin:0; }
+    .section-head::after { content:''; flex:1; height:1px; background:var(--border2); }
   </style>
 </head>
 <body>
 
-<!-- BANNER -->
 <div class="banner" id="banner">
   △ デモモード（データはこのブラウザのみ保存）　Google Apps Script URL を設定するとクラウド保存になります
 </div>
 
-<!-- ===================== HOME ===================== -->
+<!-- ========== HOME ========== -->
 <div class="screen active" id="s-home">
-  <div class="text-center" style="padding-top:16px; margin-bottom:36px;">
+  <div class="text-center" style="padding-top:20px; margin-bottom:32px;">
     <h1 class="hero">入館管理システム</h1>
     <p class="sub" style="margin-top:6px; font-family:'Caveat',cursive; font-size:15px; letter-spacing:1px;">Visitor Management</p>
   </div>
 
   <div class="card card-yellow">
     <h2 class="sec">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7a5c3a" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7a5c3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
       入館者の方
     </h2>
-    <button class="btn btn-yellow" onclick="show('s-checkin')">
-      ✋ 入館フォームを開く
-    </button>
+    <p class="sub" style="margin-bottom:16px; font-size:13px;">下のボタンから入館登録ができます。</p>
+    <button class="btn btn-yellow" onclick="show('s-checkin')">✋ 入館フォームを開く</button>
   </div>
 
   <div class="card card-blue">
     <h2 class="sec">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5ab0c8" stroke-width="2" stroke-linecap="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#56b0cc" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       管理者の方
     </h2>
-    <button class="btn btn-blue" onclick="show('s-login')">
-      🔑 管理画面へ
-    </button>
+    <button class="btn btn-blue" onclick="show('s-login')">🔑 管理画面へ</button>
   </div>
 
-  <!-- Footer icons -->
   <div class="footer-icons">
-    <!-- Sprout -->
     <svg viewBox="0 0 24 24" fill="none" stroke="#a2d6ca" stroke-width="1.5" stroke-linecap="round"><path d="M12 22V12"/><path d="M12 12C12 8 8 5 4 6c0 4 3 7 8 6z"/><path d="M12 12C12 8 16 5 20 6c0 4-3 7-8 6z"/></svg>
-    <!-- Cherry blossom -->
-    <svg viewBox="0 0 24 24" fill="none" stroke="#f5a7a5" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><path d="M12 2C10 6 8 8 12 10"/><path d="M12 2C14 6 16 8 12 10"/><path d="M22 12C18 10 16 8 14 12"/><path d="M22 12C18 14 16 16 14 12"/><path d="M12 22C14 18 16 16 12 14"/><path d="M12 22C10 18 8 16 12 14"/><path d="M2 12C6 14 8 16 10 12"/><path d="M2 12C6 10 8 8 10 12"/></svg>
-    <!-- Leaf -->
-    <svg viewBox="0 0 24 24" fill="none" stroke="#a2b890" stroke-width="1.5" stroke-linecap="round"><path d="M17 8C8 10 5 14 5 19c3.5-1.5 6-4 8-8"/><path d="M5 19C5 19 7 11 19 4c0 6-2 12-14 15z"/></svg>
-    <!-- Rose / flower -->
-    <svg viewBox="0 0 24 24" fill="none" stroke="#f0a0a0" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 4C12 4 15 7 12 9C9 7 12 4 12 4Z"/><path d="M20 12C20 12 17 15 15 12C17 9 20 12 20 12Z"/><path d="M12 20C12 20 9 17 12 15C15 17 12 20 12 20Z"/><path d="M4 12C4 12 7 9 9 12C7 15 4 12 4 12Z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#f5a7a5" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><path d="M12 2C10 6 8 8 12 10M12 2C14 6 16 8 12 10M22 12C18 10 16 8 14 12M22 12C18 14 16 16 14 12M12 22C14 18 16 16 12 14M12 22C10 18 8 16 12 14M2 12C6 14 8 16 10 12M2 12C6 10 8 8 10 12"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#b8a890" stroke-width="1.5" stroke-linecap="round"><path d="M17 8C8 10 5 14 5 19c3.5-1.5 6-4 8-8"/><path d="M5 19C5 19 7 11 19 4c0 6-2 12-14 15z"/></svg>
   </div>
 </div>
 
-<!-- ===================== CHECK-IN ===================== -->
+<!-- ========== CHECK-IN ========== -->
 <div class="screen" id="s-checkin">
-  <div class="text-center" style="margin-bottom:30px;">
-    <div style="font-size:46px;margin-bottom:10px;">👋</div>
+  <div class="text-center" style="margin-bottom:28px;">
+    <div style="font-size:42px; margin-bottom:10px;">👋</div>
     <h1 class="hero">入館登録</h1>
     <p class="sub" id="ci-time" style="margin-top:6px;"></p>
   </div>
@@ -245,7 +203,7 @@
       <input id="ci-name" type="text" placeholder="山田 太郎" />
       <div class="error-msg" id="ci-err">お名前を入力してください</div>
     </div>
-    <div class="field">
+    <div class="field" style="margin-bottom:24px;">
       <label class="field-label">🌿 今日の体調</label>
       <div class="cond-wrap">
         <button class="cond-btn sel-good"  id="cb-good"   onclick="selCond('good')">  <span class="icon">😊</span>良い</button>
@@ -255,115 +213,206 @@
     </div>
     <button class="btn btn-yellow" id="ci-submit" onclick="submitCheckin()">入館登録する →</button>
   </div>
-  <div class="text-center" style="margin-top:14px;">
+  <div class="text-center" style="margin-top:12px;">
     <button class="btn-ghost" onclick="show('s-home')">← 戻る</button>
   </div>
 </div>
 
-<!-- ===================== DONE ===================== -->
+<!-- ========== DONE ========== -->
 <div class="screen" id="s-done">
-  <div class="text-center" style="padding:60px 0;">
-    <div style="font-size:72px;margin-bottom:18px;">🎉</div>
+  <div class="text-center" style="padding:56px 0;">
+    <div style="font-size:68px; margin-bottom:16px;">🎉</div>
     <h1 class="hero" style="color:var(--green-d);">登録完了！</h1>
-    <p id="done-name" style="margin-top:10px;font-size:16px;font-weight:600;color:var(--text-sub);"></p>
-    <div id="done-cond" style="margin-top:16px;"></div>
-    <p class="sub" style="margin-top:22px;">素敵な一日を！🌿</p>
-    <button class="btn-ghost" style="margin-top:34px;" onclick="resetCheckin()">← もう一度入力する</button>
+    <p id="done-name" style="margin-top:10px; font-size:16px; font-weight:600; color:var(--text-sub);"></p>
+    <div id="done-cond" style="margin-top:14px;"></div>
+    <p class="sub" style="margin-top:20px;">素敵な一日を！🌿</p>
+    <button class="btn-ghost" style="margin-top:30px;" onclick="resetCheckin()">← もう一度入力する</button>
   </div>
 </div>
 
-<!-- ===================== LOGIN ===================== -->
+<!-- ========== LOGIN ========== -->
 <div class="screen" id="s-login">
-  <div class="text-center" style="margin-bottom:30px;">
-    <div style="font-size:44px;margin-bottom:10px;">🔑</div>
+  <div class="text-center" style="margin-bottom:28px;">
+    <div style="font-size:40px; margin-bottom:10px;">🔑</div>
     <h1 class="hero">管理者ログイン</h1>
   </div>
   <div class="card">
     <div class="field">
       <label class="field-label">パスワード</label>
-      <input id="login-pass" type="password" placeholder="パスワードを入力"
-             onkeydown="if(event.key==='Enter')doLogin()" />
+      <input id="login-pass" type="password" placeholder="パスワードを入力" onkeydown="if(event.key==='Enter')doLogin()" />
       <div class="error-msg" id="login-err">パスワードが違います</div>
     </div>
     <button class="btn btn-blue" onclick="doLogin()">ログイン</button>
-    <p class="sub" style="text-align:center;margin-top:14px;font-size:11px;">初期パスワード: admin1234</p>
+    <p class="sub" style="text-align:center; margin-top:12px; font-size:11px;">初期パスワード: admin1234</p>
   </div>
-  <div class="text-center" style="margin-top:14px;">
+  <div class="text-center" style="margin-top:12px;">
     <button class="btn-ghost" onclick="show('s-home')">← 戻る</button>
   </div>
 </div>
 
-<!-- ===================== ADMIN ===================== -->
+<!-- ========== ADMIN ========== -->
 <div class="screen screen-wide" id="s-admin">
-  <div class="row" style="margin-bottom:24px;">
+  <!-- Header -->
+  <div class="row" style="margin-bottom:22px;">
     <div>
       <h1 class="hero" style="font-size:20px;">管理ダッシュボード</h1>
-      <p class="sub" style="font-size:12px;margin-top:3px;" id="admin-updated"></p>
+      <p class="sub" style="font-size:11px; margin-top:3px;" id="admin-updated"></p>
     </div>
-    <div style="display:flex;gap:8px;">
+    <div style="display:flex; gap:8px;">
       <button class="btn-ghost btn-sm" onclick="loadAdmin()">🔄 更新</button>
       <button class="btn-ghost btn-sm" onclick="doLogout()">ログアウト</button>
     </div>
   </div>
 
+  <!-- Tabs -->
   <div class="nav">
     <button class="nav-btn active" id="tab-dash"    onclick="switchTab('dash')">📊 ダッシュボード</button>
     <button class="nav-btn"        id="tab-log"     onclick="switchTab('log')">📋 入館ログ</button>
     <button class="nav-btn"        id="tab-persons" onclick="switchTab('persons')">👥 個人管理</button>
   </div>
 
-  <!-- Dashboard -->
+  <!-- ===== DASHBOARD ===== -->
   <div id="pane-dash">
+
+    <!-- サマリー統計 -->
     <div class="stat-grid">
-      <div class="stat-box"><div class="stat-num" id="st-today"  style="color:var(--yellow-d);">0</div><div class="stat-lbl">本日の入館</div></div>
-      <div class="stat-box"><div class="stat-num" id="st-total"  style="color:var(--blue-d);">0</div><div class="stat-lbl">累計回数</div></div>
-      <div class="stat-box"><div class="stat-num" id="st-people" style="color:var(--brown);">0</div><div class="stat-lbl">登録人数</div></div>
+      <div class="stat-box">
+        <div class="stat-num" id="st-today" style="color:var(--yellow-d);">0</div>
+        <div class="stat-lbl">本日の入館</div>
+        <div class="yoy-badge" id="yoy-badge">　</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="st-total" style="color:var(--blue-d);">0</div>
+        <div class="stat-lbl">累計回数</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="st-people" style="color:var(--brown);">0</div>
+        <div class="stat-lbl">登録人数</div>
+      </div>
     </div>
+
+    <!-- 今日の体調内訳 -->
     <div class="card card-green" style="margin-bottom:18px;">
-      <h2 class="sec">🌿 今日の体調内訳</h2>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
-        <div style="text-align:center;padding:14px 6px;background:var(--white);border-radius:16px;border:1.5px solid #c8e8e0;box-shadow:var(--shadow-sm);">
-          <div style="font-size:24px;">😊</div><div id="c-good"   style="font-size:24px;font-weight:700;color:var(--green-d);font-family:'Caveat',cursive;">0</div><div class="sub">良い</div>
+      <div class="section-head"><h2>🌿 今日の体調内訳</h2></div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+        <div style="text-align:center; padding:12px 6px; background:var(--white); border-radius:14px; border:1.5px solid #b8e0d8; box-shadow:var(--shadow-sm);">
+          <div style="font-size:22px;">😊</div>
+          <div id="c-good"   style="font-size:24px; font-weight:700; color:var(--green-d); font-family:'Caveat',cursive;">0</div>
+          <div class="sub" style="font-size:11px;">良い</div>
         </div>
-        <div style="text-align:center;padding:14px 6px;background:var(--white);border-radius:16px;border:1.5px solid var(--blue);box-shadow:var(--shadow-sm);">
-          <div style="font-size:24px;">😐</div><div id="c-normal" style="font-size:24px;font-weight:700;color:var(--blue-d);font-family:'Caveat',cursive;">0</div><div class="sub">普通</div>
+        <div style="text-align:center; padding:12px 6px; background:var(--white); border-radius:14px; border:1.5px solid var(--blue); box-shadow:var(--shadow-sm);">
+          <div style="font-size:22px;">😐</div>
+          <div id="c-normal" style="font-size:24px; font-weight:700; color:var(--blue-d);  font-family:'Caveat',cursive;">0</div>
+          <div class="sub" style="font-size:11px;">普通</div>
         </div>
-        <div style="text-align:center;padding:14px 6px;background:var(--white);border-radius:16px;border:1.5px solid var(--pink);box-shadow:var(--shadow-sm);">
-          <div style="font-size:24px;">😞</div><div id="c-bad"    style="font-size:24px;font-weight:700;color:var(--pink-d);font-family:'Caveat',cursive;">0</div><div class="sub">悪い</div>
+        <div style="text-align:center; padding:12px 6px; background:var(--white); border-radius:14px; border:1.5px solid var(--pink); box-shadow:var(--shadow-sm);">
+          <div style="font-size:22px;">😞</div>
+          <div id="c-bad"    style="font-size:24px; font-weight:700; color:var(--pink-d);  font-family:'Caveat',cursive;">0</div>
+          <div class="sub" style="font-size:11px;">悪い</div>
         </div>
       </div>
     </div>
-    <div class="card">
-      <h2 class="sec">📅 直近7日間の入館数</h2>
+
+    <!-- 直近7日間 -->
+    <div class="card" style="margin-bottom:18px;">
+      <div class="section-head"><h2>📅 直近7日間の入館数</h2></div>
       <div id="bar-chart"></div>
     </div>
-  </div>
 
-  <!-- Log -->
+    <!-- ===== 日付別検索 ===== -->
+    <div class="card card-blue">
+      <div class="section-head"><h2>🔍 日付で入館者数を調べる</h2></div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px;">
+        <div>
+          <label class="field-label" style="font-size:12px;">年</label>
+          <select id="sel-year" onchange="onDateChange()"></select>
+        </div>
+        <div>
+          <label class="field-label" style="font-size:12px;">月</label>
+          <select id="sel-month" onchange="onDateChange()">
+            <option value="">全月</option>
+            <option value="01">1月</option><option value="02">2月</option><option value="03">3月</option>
+            <option value="04">4月</option><option value="05">5月</option><option value="06">6月</option>
+            <option value="07">7月</option><option value="08">8月</option><option value="09">9月</option>
+            <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" style="font-size:12px;">日</label>
+          <select id="sel-day" onchange="onDateChange()">
+            <option value="">全日</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 検索結果 -->
+      <div id="search-result" class="search-result" style="display:none;">
+        <div style="font-size:13px; font-weight:600; color:var(--text-sub);" id="search-label"></div>
+        <div class="search-result-grid">
+          <div class="search-stat">
+            <div class="num" id="sr-year"  style="color:var(--yellow-d);">—</div>
+            <div class="lbl">年間合計</div>
+          </div>
+          <div class="search-stat">
+            <div class="num" id="sr-month" style="color:var(--blue-d);">—</div>
+            <div class="lbl">月間合計</div>
+          </div>
+          <div class="search-stat">
+            <div class="num" id="sr-day"   style="color:var(--brown);">—</div>
+            <div class="lbl">日別合計</div>
+          </div>
+        </div>
+        <!-- その月の日別内訳 -->
+        <div id="sr-daily-breakdown" style="margin-top:14px;"></div>
+      </div>
+    </div>
+
+  </div><!-- /pane-dash -->
+
+  <!-- ===== LOG ===== -->
   <div id="pane-log" style="display:none;">
     <div class="card">
-      <h2 class="sec">📋 全入館ログ（新しい順）</h2>
+      <div class="row" style="margin-bottom:14px;">
+        <div class="section-head" style="margin-bottom:0;"><h2>📋 全入館ログ</h2></div>
+        <span class="sub" id="log-count" style="font-size:12px;"></span>
+      </div>
+      <!-- フィルタ -->
+      <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+        <input id="log-search" type="text" placeholder="名前で絞り込み..." style="flex:1; padding:9px 14px; font-size:13px;" oninput="renderLog()" />
+        <select id="log-cond-filter" style="width:auto; padding:9px 12px; font-size:13px;" onchange="renderLog()">
+          <option value="">全体調</option>
+          <option value="good">😊 良い</option>
+          <option value="normal">😐 普通</option>
+          <option value="bad">😞 悪い</option>
+        </select>
+      </div>
       <div id="log-list"><p class="sub">まだ記録がありません</p></div>
     </div>
   </div>
 
-  <!-- Persons -->
+  <!-- ===== PERSONS ===== -->
   <div id="pane-persons" style="display:none;">
     <div id="persons-list-view">
       <div class="card">
-        <h2 class="sec" id="persons-count">👥 登録済み (0名)</h2>
+        <div class="row" style="margin-bottom:14px;">
+          <div class="section-head" style="margin-bottom:0;"><h2>👥 登録済みの方</h2></div>
+          <span class="sub" id="persons-count" style="font-size:12px;"></span>
+        </div>
+        <input id="persons-search" type="text" placeholder="名前で絞り込み..." style="margin-bottom:12px; padding:9px 14px; font-size:13px;" oninput="renderPersons()" />
         <div id="persons-list"><p class="sub">まだ登録がありません</p></div>
       </div>
     </div>
     <div id="person-detail-view" style="display:none;"></div>
   </div>
-</div>
+
+</div><!-- /s-admin -->
 
 <script>
 // ============================================================
 // ⚙️  Google Apps Script の URL をここに貼り付けてください
 // ============================================================
-const GAS_URL = "https://script.google.com/macros/s/AKfycbya44S-3vKO9UnWhyeq7m_d9bnu7Ckzmw-7c3F_PkmKlrv8gTuRfcntxfKM4fADNP92NQ/exec";
+const GAS_URL = "https://script.google.com/macros/library/d/1kZXAC_V9-i3cEpj-lcmGjoFMlGuz2jSVvZpgz24FzWzusGyFxFanuPxD/2";
 // ============================================================
 
 const PASS = "admin1234";
@@ -372,6 +421,7 @@ let selCondVal = "good";
 let logs = [], persons = {};
 const isDemo = GAS_URL === "YOUR_GAS_URL_HERE";
 
+/* ---- Storage ---- */
 function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch{ return null; } }
 function lsSet(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
 
@@ -400,6 +450,7 @@ function demoApi(action,payload){
   return {ok:false};
 }
 
+/* ---- Utils ---- */
 function nowStr(){ return new Date().toLocaleString("ja-JP"); }
 function todayStr(){
   return new Date().toLocaleDateString("ja-JP",{year:"numeric",month:"2-digit",day:"2-digit"}).replace(/\//g,"-");
@@ -410,6 +461,7 @@ function condTag(c){
   return `<span class="tag ${cls}">${lbl}</span>`;
 }
 
+/* ---- Screen ---- */
 function show(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
@@ -418,12 +470,8 @@ function show(id){
   if(id==="s-admin")   loadAdmin();
 }
 
+/* ---- Init ---- */
 (function init(){
-  const base = window.location.origin + window.location.pathname;
-  const url  = base + "?mode=checkin";
-  document.getElementById("qr-url").textContent = url;
-  document.getElementById("qr-img").src =
-    `https://api.qrserver.com/v1/create-qr-code/?size=168x168&data=${encodeURIComponent(url)}&color=7a5c3a&bgcolor=fffdf0`;
   if(new URLSearchParams(location.search).get("mode")==="checkin") show("s-checkin");
   if(!isDemo){
     const b=document.getElementById("banner");
@@ -432,6 +480,7 @@ function show(id){
   }
 })();
 
+/* ---- Condition select ---- */
 function selCond(c){
   selCondVal=c;
   ["good","normal","bad"].forEach(k=>{
@@ -439,6 +488,7 @@ function selCond(c){
   });
 }
 
+/* ---- Check-in ---- */
 async function submitCheckin(){
   const name=document.getElementById("ci-name").value.trim();
   const err=document.getElementById("ci-err");
@@ -454,11 +504,9 @@ async function submitCheckin(){
   }catch(e){ alert("送信に失敗しました。もう一度お試しください。"); }
   btn.textContent="入館登録する →"; btn.disabled=false;
 }
+function resetCheckin(){ document.getElementById("ci-name").value=""; selCond("good"); show("s-checkin"); }
 
-function resetCheckin(){
-  document.getElementById("ci-name").value=""; selCond("good"); show("s-checkin");
-}
-
+/* ---- Login ---- */
 function doLogin(){
   const p=document.getElementById("login-pass").value;
   const err=document.getElementById("login-err");
@@ -467,42 +515,174 @@ function doLogin(){
 }
 function doLogout(){ show("s-home"); }
 
+/* ---- Admin load ---- */
 async function loadAdmin(){
   const [lr,pr]=await Promise.all([apiCall("getLogs"),apiCall("getPersons")]);
   logs=lr.data||[]; persons=pr.data||{};
   document.getElementById("admin-updated").textContent="最終更新: "+new Date().toLocaleTimeString("ja-JP");
+
+  /* サマリー */
   const td=todayStr(); const tl=logs.filter(l=>l.date===td);
   document.getElementById("st-today").textContent  = tl.length;
   document.getElementById("st-total").textContent  = logs.length;
   document.getElementById("st-people").textContent = Object.keys(persons).length;
+
+  /* 体調内訳 */
   const cc={good:0,normal:0,bad:0};
   tl.forEach(l=>{ if(cc[l.condition]!==undefined) cc[l.condition]++; });
   document.getElementById("c-good").textContent   = cc.good;
   document.getElementById("c-normal").textContent = cc.normal;
   document.getElementById("c-bad").textContent    = cc.bad;
 
+  /* 前年同期比 */
+  renderYoY(td, tl.length);
+
+  /* バーチャート */
+  renderBarChart();
+
+  /* ログ＆個人リスト */
+  renderLog();
+  renderPersons();
+
+  /* 日付選択セレクト初期化 */
+  initDateSelects();
+}
+
+/* ---- 前年同期比 ---- */
+function renderYoY(todayISO, todayCount){
+  const badge = document.getElementById("yoy-badge");
+  const d = new Date(todayISO);
+  const prevYear = d.getFullYear() - 1;
+  // 前年の「同月・同じ第何曜日」を計算
+  const month  = d.getMonth();       // 0-indexed
+  const dow    = d.getDay();         // 0=日〜6=土
+  const weekNo = Math.ceil(d.getDate() / 7); // 第何週か
+
+  // 前年の同月1日
+  const firstOfMonth = new Date(prevYear, month, 1);
+  const firstDow = firstOfMonth.getDay();
+  // 同月・同曜日の最初の日
+  let dayOffset = (dow - firstDow + 7) % 7;
+  let targetDay = 1 + dayOffset + (weekNo - 1) * 7;
+  // 月末をオーバーしたら1週前にずらす
+  const daysInMonth = new Date(prevYear, month+1, 0).getDate();
+  if(targetDay > daysInMonth) targetDay -= 7;
+
+  if(targetDay < 1){ badge.textContent="前年データなし"; badge.className="yoy-badge yoy-flat"; return; }
+
+  const mm = String(month+1).padStart(2,"0");
+  const dd = String(targetDay).padStart(2,"0");
+  const prevISO = `${prevYear}-${mm}-${dd}`;
+  const prevCount = logs.filter(l=>l.date===prevISO).length;
+
+  const dowLabel = ["日","月","火","水","木","金","土"][dow];
+  const weekLabel = ["","第1","第2","第3","第4","第5"][weekNo];
+
+  if(prevCount===0 && logs.filter(l=>l.date.startsWith(String(prevYear))).length===0){
+    badge.textContent="前年データなし"; badge.className="yoy-badge yoy-flat"; return;
+  }
+
+  const diff = todayCount - prevCount;
+  const arrow = diff>0?"▲":diff<0?"▼":"－";
+  const cls   = diff>0?"yoy-up":diff<0?"yoy-down":"yoy-flat";
+  badge.className = "yoy-badge "+cls;
+  badge.innerHTML = `前年${weekLabel}${dowLabel}曜 ${prevCount}人 <strong>${arrow}${Math.abs(diff)}</strong>`;
+}
+
+/* ---- バーチャート ---- */
+function renderBarChart(){
   const byDate={};
   logs.forEach(l=>{ byDate[l.date]=(byDate[l.date]||0)+1; });
   const recent=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,7);
   const max=Math.max(...recent.map(d=>d[1]),1);
   document.getElementById("bar-chart").innerHTML=recent.length===0
     ?'<p class="sub">データがありません</p>'
-    :recent.map(([date,count])=>`<div class="bar-row"><span class="bar-date">${date}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round((count/max)*100)}%"><span>${count}人</span></div></div></div>`).join("");
-
-  document.getElementById("log-list").innerHTML=logs.length===0
-    ?'<p class="sub">まだ記録がありません</p>'
-    :logs.map(l=>`<div class="log-item"><div style="display:flex;align-items:center;gap:10px;"><div class="avatar av-brown" style="width:32px;height:32px;font-size:13px;">${(l.name||"?")[0]}</div><div><div style="font-weight:600;font-size:14px;">${l.name}</div>${condTag(l.condition)}</div></div><small>${l.timestamp}</small></div>`).join("");
-
-  const keys=Object.keys(persons);
-  document.getElementById("persons-count").textContent=`👥 登録済み (${keys.length}名)`;
-  document.getElementById("persons-list").innerHTML=keys.length===0
-    ?'<p class="sub">まだ登録がありません</p>'
-    :keys.map((name,i)=>{
-      const p=persons[name]; const av=AV_COLORS[i%3];
-      return `<div class="person-row" onclick="showPersonDetail('${name.replace(/'/g,"\\'")}')"><div style="display:flex;align-items:center;gap:12px;"><div class="avatar ${av}">${name[0]}</div><div><div style="font-weight:600;font-size:15px;">${name}</div><div class="sub" style="font-size:12px;margin-top:2px;">来館 ${p.visits?.length||0} 回</div></div></div><span style="color:var(--text-hint);font-size:18px;">→</span></div>`;
-    }).join("");
+    :recent.map(([date,count])=>`
+      <div class="bar-row">
+        <span class="bar-date">${date}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${Math.round((count/max)*100)}%">
+            <span>${count}人</span>
+          </div>
+        </div>
+      </div>`).join("");
 }
 
+/* ---- 日付セレクト初期化 ---- */
+function initDateSelects(){
+  const years = [...new Set(logs.map(l=>l.date.slice(0,4)))].sort().reverse();
+  const curYear = new Date().getFullYear();
+  if(!years.includes(String(curYear))) years.unshift(String(curYear));
+  const ySel = document.getElementById("sel-year");
+  ySel.innerHTML = years.map(y=>`<option value="${y}">${y}年</option>`).join("");
+  updateDayOptions();
+  onDateChange();
+}
+
+function updateDayOptions(){
+  const m = document.getElementById("sel-month").value;
+  const y = document.getElementById("sel-year").value;
+  const dSel = document.getElementById("sel-day");
+  dSel.innerHTML = '<option value="">全日</option>';
+  if(m && y){
+    const days = new Date(Number(y), Number(m), 0).getDate();
+    for(let i=1;i<=days;i++){
+      const dd=String(i).padStart(2,"0");
+      dSel.innerHTML += `<option value="${dd}">${i}日</option>`;
+    }
+  }
+}
+
+function onDateChange(){
+  updateDayOptions();
+  const y = document.getElementById("sel-year").value;
+  const m = document.getElementById("sel-month").value;
+  const d = document.getElementById("sel-day").value;
+  if(!y){ document.getElementById("search-result").style.display="none"; return; }
+
+  /* 年間 */
+  const yearLogs = logs.filter(l=>l.date.startsWith(y));
+  /* 月間 */
+  const monthLogs = m ? yearLogs.filter(l=>l.date.slice(5,7)===m) : [];
+  /* 日別 */
+  const dayStr = (y && m && d) ? `${y}-${m}-${d}` : "";
+  const dayLogs = dayStr ? logs.filter(l=>l.date===dayStr) : [];
+
+  document.getElementById("sr-year").textContent  = yearLogs.length+"人";
+  document.getElementById("sr-month").textContent = m ? monthLogs.length+"人" : "—";
+  document.getElementById("sr-day").textContent   = dayStr ? dayLogs.length+"人" : "—";
+
+  /* ラベル */
+  let label = y+"年";
+  if(m) label += " "+Number(m)+"月";
+  if(d) label += " "+Number(d)+"日";
+  document.getElementById("search-label").textContent = label+" の集計";
+
+  /* 月選択時：日別内訳バー */
+  const breakdown = document.getElementById("sr-daily-breakdown");
+  if(m && monthLogs.length > 0){
+    const byDay={};
+    monthLogs.forEach(l=>{ const dd=l.date.slice(8); byDay[dd]=(byDay[dd]||0)+1; });
+    const maxD = Math.max(...Object.values(byDay),1);
+    breakdown.innerHTML = `
+      <div style="font-size:12px; color:var(--text-sub); font-weight:600; margin-bottom:8px;">📆 日別内訳</div>
+      `+Object.entries(byDay).sort((a,b)=>a[0].localeCompare(b[0])).map(([dd,cnt])=>`
+        <div class="bar-row" style="margin-bottom:6px;">
+          <span class="bar-date" style="min-width:40px;">${Number(dd)}日</span>
+          <div class="bar-track" style="height:18px;">
+            <div class="bar-fill" style="width:${Math.round((cnt/maxD)*100)}%; background:linear-gradient(90deg,var(--blue),var(--blue-d));">
+              <span style="color:#1a4a5a;">${cnt}人</span>
+            </div>
+          </div>
+        </div>`).join("");
+  } else {
+    breakdown.innerHTML="";
+  }
+
+  document.getElementById("search-result").style.display="block";
+}
+
+/* ---- Tab ---- */
 function switchTab(t){
   ["dash","log","persons"].forEach(k=>{
     document.getElementById("pane-"+k).style.display=k===t?"block":"none";
@@ -510,20 +690,70 @@ function switchTab(t){
   });
 }
 
+/* ---- Log render (with filter) ---- */
+function renderLog(){
+  const q    = (document.getElementById("log-search")?.value||"").trim().toLowerCase();
+  const cond = document.getElementById("log-cond-filter")?.value||"";
+  let filtered = logs;
+  if(q)    filtered = filtered.filter(l=>(l.name||"").toLowerCase().includes(q));
+  if(cond) filtered = filtered.filter(l=>l.condition===cond);
+  document.getElementById("log-count").textContent = filtered.length+"件";
+  document.getElementById("log-list").innerHTML = filtered.length===0
+    ? '<p class="sub">記録がありません</p>'
+    : filtered.map(l=>`
+        <div class="log-item">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="avatar av-brown" style="width:32px;height:32px;font-size:13px;">${(l.name||"?")[0]}</div>
+            <div>
+              <div style="font-weight:600;font-size:14px;">${l.name}</div>
+              ${condTag(l.condition)}
+            </div>
+          </div>
+          <small>${l.timestamp}</small>
+        </div>`).join("");
+}
+
+/* ---- Persons render (with search) ---- */
+function renderPersons(){
+  const q = (document.getElementById("persons-search")?.value||"").trim().toLowerCase();
+  const keys = Object.keys(persons).filter(n=>n.toLowerCase().includes(q));
+  document.getElementById("persons-count").textContent = keys.length+"名";
+  document.getElementById("persons-list").innerHTML = keys.length===0
+    ? '<p class="sub">見つかりません</p>'
+    : keys.map((name,i)=>{
+        const p=persons[name]; const av=AV_COLORS[i%3];
+        return `<div class="person-row" onclick="showPersonDetail('${name.replace(/'/g,"\\'")}')">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="avatar ${av}">${name[0]}</div>
+            <div>
+              <div style="font-weight:600;font-size:15px;">${name}</div>
+              <div class="sub" style="font-size:12px;margin-top:2px;">来館 ${p.visits?.length||0} 回</div>
+            </div>
+          </div>
+          <span style="color:var(--text-hint);font-size:18px;">→</span>
+        </div>`;
+      }).join("");
+}
+
+/* ---- Person detail ---- */
 function showPersonDetail(name){
   const p=persons[name]; if(!p) return;
   document.getElementById("persons-list-view").style.display="none";
   const dv=document.getElementById("person-detail-view"); dv.style.display="block";
   const byDate={};
   (p.visits||[]).forEach(v=>{ if(!byDate[v.date]) byDate[v.date]=[]; byDate[v.date].push(v); });
-  const histHtml=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).map(([date,visits])=>`<div style="margin-bottom:14px;"><span class="visit-date-badge">${date}</span>${visits.map(v=>`<div class="visit-row">${condTag(v.condition)}<small>${v.timestamp}</small></div>`).join("")}</div>`).join("")||'<p class="sub">履歴がありません</p>';
+  const histHtml=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).map(([date,visits])=>`
+    <div style="margin-bottom:14px;">
+      <span class="visit-date-badge">${date}</span>
+      ${visits.map(v=>`<div class="visit-row">${condTag(v.condition)}<small>${v.timestamp}</small></div>`).join("")}
+    </div>`).join("")||'<p class="sub">履歴がありません</p>';
   const last=p.visits?.at(-1);
   const lastHtml=last?`<div class="detail-meta">最終来館: <strong>${last.timestamp}</strong>　${condTag(last.condition)}</div>`:"";
   dv.innerHTML=`
     <button class="btn-ghost btn-sm" style="margin-bottom:20px;" onclick="backToList()">← 一覧へ戻る</button>
     <div class="card" style="margin-bottom:16px;">
       <div style="display:flex;gap:16px;align-items:center;">
-        <div class="avatar av-brown" style="width:56px;height:56px;font-size:22px;">${name[0]}</div>
+        <div class="avatar av-brown" style="width:54px;height:54px;font-size:22px;">${name[0]}</div>
         <div>
           <div style="font-size:22px;font-weight:700;font-family:'Kaisei Opti',serif;">${name}</div>
           <div class="sub" style="margin-top:4px;">合計 ${p.visits?.length||0} 回来館</div>
@@ -536,7 +766,8 @@ function showPersonDetail(name){
       <button class="btn btn-green" id="save-btn" style="margin-top:14px;" onclick="saveNotes('${name.replace(/'/g,"\\'")}')">💾 保存する</button>
     </div>
     <div class="card">
-      <h2 class="sec">🗓️ 来館履歴</h2>${histHtml}
+      <div class="section-head"><h2>🗓️ 来館履歴</h2></div>
+      ${histHtml}
     </div>`;
 }
 
