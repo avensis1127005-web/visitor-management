@@ -83,6 +83,8 @@
     .cond-btn.sel-good   { background:#edfaf5; border-color:var(--green-d); color:var(--green-d); }
     .cond-btn.sel-normal { background:#f0faff; border-color:var(--blue-d);  color:var(--blue-d); }
     .cond-btn.sel-bad    { background:#fff0f0; border-color:var(--pink-d);  color:var(--pink-d); }
+    .cond-icon-soft { font-size:24px; line-height:1; display:block; }
+    .cond-label     { font-size:12px; font-weight:700; margin-top:4px; line-height:1.3; }
 
     /* NAV TABS */
     .nav { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
@@ -191,26 +193,100 @@
 
 <!-- ========== CHECK-IN ========== -->
 <div class="screen" id="s-checkin">
-  <div class="text-center" style="margin-bottom:28px;">
+  <div class="text-center" style="margin-bottom:24px;">
     <div style="font-size:42px; margin-bottom:10px;">👋</div>
     <h1 class="hero">入館登録</h1>
     <p class="sub" id="ci-time" style="margin-top:6px;"></p>
   </div>
 
   <div class="card">
-    <div class="field">
-      <label class="field-label">✏️ お名前</label>
-      <input id="ci-name" type="text" placeholder="山田 太郎" />
-      <div class="error-msg" id="ci-err">お名前を入力してください</div>
+
+    <!-- お名前（漢字） -->
+    <div style="margin-bottom:6px;">
+      <label class="field-label">✏️ お名前（漢字）<span style="color:var(--pink-d);font-size:11px;margin-left:4px;">必須</span></label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <div style="font-size:11px;color:var(--text-hint);margin-bottom:4px;">姓</div>
+          <input id="ci-sei" type="text" placeholder="山田" oninput="autoKana()" />
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text-hint);margin-bottom:4px;">名</div>
+          <input id="ci-mei" type="text" placeholder="太郎" oninput="autoKana()" />
+        </div>
+      </div>
+      <div class="error-msg" id="ci-err-name">姓・名をどちらも入力してください</div>
     </div>
+
+    <hr class="divider" style="margin:16px 0;">
+
+    <!-- フリガナ（自動入力・手動修正可） -->
+    <div style="margin-bottom:6px;">
+      <label class="field-label">📖 フリガナ
+        <span style="color:var(--pink-d);font-size:11px;margin-left:4px;">必須</span>
+        <span style="color:var(--text-hint);font-size:11px;margin-left:6px;">※自動入力されます。修正もできます</span>
+      </label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <div style="font-size:11px;color:var(--text-hint);margin-bottom:4px;">セイ</div>
+          <input id="ci-sei-kana" type="text" placeholder="ヤマダ" oninput="kanaManualEdit('sei')" />
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text-hint);margin-bottom:4px;">メイ</div>
+          <input id="ci-mei-kana" type="text" placeholder="タロウ" oninput="kanaManualEdit('mei')" />
+        </div>
+      </div>
+      <div class="error-msg" id="ci-err-kana">フリガナをどちらも入力してください</div>
+    </div>
+
+    <hr class="divider" style="margin:16px 0;">
+
+    <!-- 所属・学校名 ＋ 学年 -->
+    <div style="margin-bottom:6px;">
+      <label class="field-label">🏫 所属・学校名 / 学年<span style="color:var(--pink-d);font-size:11px;margin-left:4px;">必須</span></label>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;">
+        <div>
+          <div style="font-size:11px;color:var(--text-hint);margin-bottom:4px;">所属・学校名</div>
+          <input id="ci-school" type="text" placeholder="○○小学校" />
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text-hint);margin-bottom:4px;">学年</div>
+          <select id="ci-grade">
+            <option value="">選択</option>
+            <option value="1年生">1年生</option>
+            <option value="2年生">2年生</option>
+            <option value="3年生">3年生</option>
+            <option value="4年生">4年生</option>
+            <option value="5年生">5年生</option>
+            <option value="6年生">6年生</option>
+            <option value="卒業">卒業</option>
+            <option value="その他">その他</option>
+          </select>
+        </div>
+      </div>
+      <div class="error-msg" id="ci-err-school">所属・学校名と学年を入力してください</div>
+    </div>
+
+    <hr class="divider" style="margin:16px 0;">
+
+    <!-- 今日の調子（任意） -->
     <div class="field" style="margin-bottom:24px;">
-      <label class="field-label">🌿 今日の体調</label>
+      <label class="field-label" style="font-size:14px;">今日の調子は？<span style="color:var(--text-hint);font-size:11px;margin-left:6px;">任意・押さなくても OK</span></label>
       <div class="cond-wrap">
-        <button class="cond-btn sel-good"  id="cb-good"   onclick="selCond('good')">  <span class="icon">😊</span>良い</button>
-        <button class="cond-btn"           id="cb-normal" onclick="selCond('normal')"><span class="icon">😐</span>普通</button>
-        <button class="cond-btn"           id="cb-bad"    onclick="selCond('bad')">   <span class="icon">😞</span>悪い</button>
+        <button class="cond-btn sel-good"  id="cb-good"   onclick="selCond('good')">
+          <span style="font-size:28px;line-height:1;">🌈</span>
+          <span style="font-size:13px;font-weight:700;">げんき！</span>
+        </button>
+        <button class="cond-btn"           id="cb-normal" onclick="selCond('normal')">
+          <span style="font-size:28px;line-height:1;">🍃</span>
+          <span style="font-size:13px;font-weight:700;">まあまあ</span>
+        </button>
+        <button class="cond-btn"           id="cb-bad"    onclick="selCond('bad')">
+          <span style="font-size:28px;line-height:1;">🌧️</span>
+          <span style="font-size:13px;font-weight:700;">うーん…</span>
+        </button>
       </div>
     </div>
+
     <button class="btn btn-yellow" id="ci-submit" onclick="submitCheckin()">入館登録する →</button>
   </div>
   <div class="text-center" style="margin-top:12px;">
@@ -269,6 +345,7 @@
     <button class="nav-btn active" id="tab-dash"    onclick="switchTab('dash')">📊 ダッシュボード</button>
     <button class="nav-btn"        id="tab-log"     onclick="switchTab('log')">📋 入館ログ</button>
     <button class="nav-btn"        id="tab-persons" onclick="switchTab('persons')">👥 個人管理</button>
+    <button class="nav-btn"        id="tab-settings" onclick="switchTab('settings')">⚙️ 設定</button>
   </div>
 
   <!-- ===== DASHBOARD ===== -->
@@ -382,9 +459,9 @@
         <input id="log-search" type="text" placeholder="名前で絞り込み..." style="flex:1; padding:9px 14px; font-size:13px;" oninput="renderLog()" />
         <select id="log-cond-filter" style="width:auto; padding:9px 12px; font-size:13px;" onchange="renderLog()">
           <option value="">全体調</option>
-          <option value="good">😊 良い</option>
-          <option value="normal">😐 普通</option>
-          <option value="bad">😞 悪い</option>
+          <option value="good">🌈 げんき！</option>
+          <option value="normal">🍃 まあまあ</option>
+          <option value="bad">🌧️ うーん…</option>
         </select>
       </div>
       <div id="log-list"><p class="sub">まだ記録がありません</p></div>
@@ -406,17 +483,48 @@
     <div id="person-detail-view" style="display:none;"></div>
   </div>
 
+  <!-- ===== SETTINGS ===== -->
+  <div id="pane-settings" style="display:none;">
+    <div class="card">
+      <div class="section-head"><h2>🔑 パスワード変更</h2></div>
+      <p class="sub" style="font-size:13px;margin-bottom:18px;">管理者ログインのパスワードを変更できます。</p>
+      <div class="field">
+        <label class="field-label">現在のパスワード</label>
+        <input id="pw-current" type="password" placeholder="現在のパスワード" />
+        <div class="error-msg" id="pw-err-current">現在のパスワードが違います</div>
+      </div>
+      <div class="field">
+        <label class="field-label">新しいパスワード</label>
+        <input id="pw-new" type="password" placeholder="新しいパスワード（6文字以上）" />
+        <div class="error-msg" id="pw-err-new">6文字以上で入力してください</div>
+      </div>
+      <div class="field">
+        <label class="field-label">新しいパスワード（確認）</label>
+        <input id="pw-confirm" type="password" placeholder="もう一度入力" />
+        <div class="error-msg" id="pw-err-confirm">パスワードが一致しません</div>
+      </div>
+      <button class="btn btn-blue" id="pw-change-btn" onclick="changePassword()" style="margin-top:4px;">🔑 パスワードを変更する</button>
+      <div id="pw-success" style="display:none;margin-top:14px;padding:12px 16px;background:#f0fdf8;border:1.5px solid var(--green);border-radius:14px;color:var(--green-d);font-size:14px;font-weight:600;">✅ パスワードを変更しました！次回から新しいパスワードでログインしてください。</div>
+    </div>
+    <div class="card card-yellow" style="margin-top:4px;">
+      <div class="section-head"><h2>💡 パスワードについて</h2></div>
+      <p class="sub" style="font-size:13px;line-height:1.8;">・パスワードはGoogleスプレッドシート（GAS）に保存されます<br>・どのPC・スマホからでも同じパスワードが使えます<br>・デモモード中はブラウザのみに保存されます</p>
+    </div>
+  </div>
+
 </div><!-- /s-admin -->
 
 <script>
 // ============================================================
 // ⚙️  Google Apps Script の URL をここに貼り付けてください
 // ============================================================
-const GAS_URL = "https://script.google.com/macros/s/AKfycbya44S-3vKO9UnWhyeq7m_d9bnu7Ckzmw-7c3F_PkmKlrv8gTuRfcntxfKM4fADNP92NQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzLJI8pS4Xv3F8numlWI2zw9Su86CLIv6Ehd-gJ7DvB1trQKPfwvAlMgV6vZjpwwYqsfg/exec";
 // ============================================================
 
-const PASS = "admin1234";
+// パスワード照合はGAS側で管理（isDemo時のみローカルフォールバック）
+function getPass(){ return localStorage.getItem("vms_pass")||"admin1234"; }
 const AV_COLORS = ["av-brown","av-blue","av-pink"];
+const STICKER_MILESTONES = [30,60,90,120,150];
 let selCondVal = "good";
 let logs = [], persons = {};
 const isDemo = GAS_URL === "YOUR_GAS_URL_HERE";
@@ -434,9 +542,21 @@ async function apiCall(action, payload={}){
 function demoApi(action,payload){
   if(action==="checkin"){
     const ls=lsGet("vms_logs")||[]; const ps=lsGet("vms_persons")||{};
-    const e={id:Date.now(),name:payload.name,condition:payload.condition,timestamp:nowStr(),date:todayStr()};
+    const e={
+      id:Date.now(), name:payload.name, kana:payload.kana||"",
+      school:payload.school||"", grade:payload.grade||"",
+      condition:payload.condition, timestamp:nowStr(), date:todayStr()
+    };
     ls.push(e); lsSet("vms_logs",ls);
-    if(!ps[payload.name]) ps[payload.name]={name:payload.name,visits:[],notes:""};
+    if(!ps[payload.name]) ps[payload.name]={
+      name:payload.name, kana:payload.kana||"",
+      school:payload.school||"", grade:payload.grade||"",
+      visits:[], notes:"", stickers:{}
+    };
+    // 最新のschool/gradeで上書き
+    ps[payload.name].kana   = payload.kana||ps[payload.name].kana||"";
+    ps[payload.name].school = payload.school||ps[payload.name].school||"";
+    ps[payload.name].grade  = payload.grade||ps[payload.name].grade||"";
     ps[payload.name].visits.push({timestamp:e.timestamp,date:e.date,condition:payload.condition});
     lsSet("vms_persons",ps); return {ok:true};
   }
@@ -445,6 +565,16 @@ function demoApi(action,payload){
   if(action==="saveNotes"){
     const ps=lsGet("vms_persons")||{};
     if(ps[payload.name]) ps[payload.name].notes=payload.notes;
+    lsSet("vms_persons",ps); return {ok:true};
+  }
+  if(action==="saveFirstReason"){
+    const ps=lsGet("vms_persons")||{};
+    if(ps[payload.name]) ps[payload.name].firstReason=payload.firstReason;
+    lsSet("vms_persons",ps); return {ok:true};
+  }
+  if(action==="saveStickers"){
+    const ps=lsGet("vms_persons")||{};
+    if(ps[payload.name]) ps[payload.name].stickers=payload.stickers;
     lsSet("vms_persons",ps); return {ok:true};
   }
   return {ok:false};
@@ -456,8 +586,8 @@ function todayStr(){
   return new Date().toLocaleDateString("ja-JP",{year:"numeric",month:"2-digit",day:"2-digit"}).replace(/\//g,"-");
 }
 function condTag(c){
-  const m={good:["tag-good","😊 良い"],normal:["tag-normal","😐 普通"],bad:["tag-bad","😞 悪い"]};
-  const [cls,lbl]=m[c]||["tag-good","😊 良い"];
+  const m={good:["tag-good","🌈 げんき！"],normal:["tag-normal","🍃 まあまあ"],bad:["tag-bad","🌧️ うーん…"]};
+  const [cls,lbl]=m[c]||["tag-good","🌈 げんき！"];
   return `<span class="tag ${cls}">${lbl}</span>`;
 }
 
@@ -488,30 +618,97 @@ function selCond(c){
   });
 }
 
+/* ---- フリガナ自動変換 ---- */
+// IME確定時のふりがな取得（compositionend を使う）
+let seiKanaAuto = true;  // 手動編集されたかフラグ
+let meiKanaAuto = true;
+
+// ひらがな→カタカナ変換
+function toKatakana(str){ return str.replace(/[\u3041-\u3096]/g,c=>String.fromCharCode(c.charCodeAt(0)+0x60)); }
+
+// 入力中のひらがなをリアルタイムでカタカナに変換してフリガナ欄へ反映
+function autoKana(){
+  const sei = document.getElementById("ci-sei").value;
+  const mei = document.getElementById("ci-mei").value;
+  if(seiKanaAuto){
+    const kana = toKatakana(sei.replace(/[^\u3040-\u309f\u30a0-\u30ff]/g,""));
+    if(kana) document.getElementById("ci-sei-kana").value = kana;
+  }
+  if(meiKanaAuto){
+    const kana = toKatakana(mei.replace(/[^\u3040-\u309f\u30a0-\u30ff]/g,""));
+    if(kana) document.getElementById("ci-mei-kana").value = kana;
+  }
+}
+function kanaManualEdit(which){
+  if(which==="sei") seiKanaAuto = false;
+  if(which==="mei") meiKanaAuto = false;
+}
+
 /* ---- Check-in ---- */
 async function submitCheckin(){
-  const name=document.getElementById("ci-name").value.trim();
-  const err=document.getElementById("ci-err");
-  if(!name){ err.style.display="block"; return; }
-  err.style.display="none";
+  let ok = true;
+
+  const sei      = document.getElementById("ci-sei").value.trim();
+  const mei      = document.getElementById("ci-mei").value.trim();
+  const seiKana  = document.getElementById("ci-sei-kana").value.trim();
+  const meiKana  = document.getElementById("ci-mei-kana").value.trim();
+  const school   = document.getElementById("ci-school").value.trim();
+  const grade    = document.getElementById("ci-grade").value;
+
+  const errName   = document.getElementById("ci-err-name");
+  const errKana   = document.getElementById("ci-err-kana");
+  const errSchool = document.getElementById("ci-err-school");
+
+  errName.style.display   = "none";
+  errKana.style.display   = "none";
+  errSchool.style.display = "none";
+
+  if(!sei || !mei){   errName.style.display="block";   ok=false; }
+  if(!seiKana || !meiKana){ errKana.style.display="block"; ok=false; }
+  if(!school || !grade){    errSchool.style.display="block"; ok=false; }
+  if(!ok) return;
+
+  const fullName  = sei + " " + mei;
+  const fullKana  = seiKana + " " + meiKana;
+
   const btn=document.getElementById("ci-submit");
   btn.textContent="送信中... 🌿"; btn.disabled=true;
   try{
-    await apiCall("checkin",{name,condition:selCondVal});
-    document.getElementById("done-name").textContent=name+" さん、ようこそ！";
-    document.getElementById("done-cond").innerHTML=condTag(selCondVal);
+    await apiCall("checkin",{ name:fullName, kana:fullKana, school, grade, condition:selCondVal });
+    document.getElementById("done-name").textContent = fullName + " さん、ようこそ！";
+    document.getElementById("done-cond").innerHTML   = condTag(selCondVal);
     show("s-done");
   }catch(e){ alert("送信に失敗しました。もう一度お試しください。"); }
   btn.textContent="入館登録する →"; btn.disabled=false;
 }
-function resetCheckin(){ document.getElementById("ci-name").value=""; selCond("good"); show("s-checkin"); }
+function resetCheckin(){
+  ["ci-sei","ci-mei","ci-sei-kana","ci-mei-kana","ci-school"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("ci-grade").value="";
+  seiKanaAuto = true; meiKanaAuto = true;
+  selCond("good");
+  show("s-checkin");
+}
 
 /* ---- Login ---- */
-function doLogin(){
-  const p=document.getElementById("login-pass").value;
-  const err=document.getElementById("login-err");
-  if(p===PASS){ err.style.display="none"; document.getElementById("login-pass").value=""; show("s-admin"); }
-  else err.style.display="block";
+async function doLogin(){
+  const p   = document.getElementById("login-pass").value;
+  const err = document.getElementById("login-err");
+  const btn = document.querySelector("#s-login .btn-blue");
+  if(!p){ err.style.display="block"; return; }
+  btn.textContent="確認中..."; btn.disabled=true;
+  try{
+    if(isDemo){
+      // デモモード：ローカル照合
+      if(p===getPass()){ err.style.display="none"; document.getElementById("login-pass").value=""; show("s-admin"); }
+      else err.style.display="block";
+    } else {
+      // GAS照合
+      const res = await apiCall("checkPass",{ password: p });
+      if(res.match){ err.style.display="none"; document.getElementById("login-pass").value=""; show("s-admin"); }
+      else err.style.display="block";
+    }
+  }catch(e){ err.style.display="block"; }
+  btn.textContent="ログイン"; btn.disabled=false;
 }
 function doLogout(){ show("s-home"); }
 
@@ -684,7 +881,7 @@ function onDateChange(){
 
 /* ---- Tab ---- */
 function switchTab(t){
-  ["dash","log","persons"].forEach(k=>{
+  ["dash","log","persons","settings"].forEach(k=>{
     document.getElementById("pane-"+k).style.display=k===t?"block":"none";
     document.getElementById("tab-"+k).className="nav-btn"+(k===t?" active":"");
   });
@@ -716,18 +913,30 @@ function renderLog(){
 /* ---- Persons render (with search) ---- */
 function renderPersons(){
   const q = (document.getElementById("persons-search")?.value||"").trim().toLowerCase();
-  const keys = Object.keys(persons).filter(n=>n.toLowerCase().includes(q));
+  const keys = Object.keys(persons).filter(n=>n.toLowerCase().includes(q)||
+    (persons[n].kana||"").toLowerCase().includes(q)||
+    (persons[n].school||"").toLowerCase().includes(q));
   document.getElementById("persons-count").textContent = keys.length+"名";
   document.getElementById("persons-list").innerHTML = keys.length===0
     ? '<p class="sub">見つかりません</p>'
     : keys.map((name,i)=>{
         const p=persons[name]; const av=AV_COLORS[i%3];
+        const visitCount = p.visits?.length||0;
+        const nextMilestone = STICKER_MILESTONES.find(m=>visitCount<m);
+        const stickerDue = STICKER_MILESTONES.filter(m=>visitCount>=m && !(p.stickers||{})[m]);
+        const stickerBadge = stickerDue.length>0
+          ? `<span style="background:var(--yellow);color:#5a4010;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;margin-left:6px;">🏅 渡し忘れ ${stickerDue.length}件</span>` : "";
         return `<div class="person-row" onclick="showPersonDetail('${name.replace(/'/g,"\\'")}')">
           <div style="display:flex;align-items:center;gap:12px;">
             <div class="avatar ${av}">${name[0]}</div>
             <div>
-              <div style="font-weight:600;font-size:15px;">${name}</div>
-              <div class="sub" style="font-size:12px;margin-top:2px;">来館 ${p.visits?.length||0} 回</div>
+              <div style="font-weight:600;font-size:15px;">${name}${stickerBadge}</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+                ${p.kana?`<span style="font-size:11px;color:var(--text-hint);">${p.kana}</span>`:""}
+                ${p.school?`<span class="pill" style="font-size:11px;padding:2px 8px;">🏫 ${p.school}</span>`:""}
+                ${p.grade ?`<span class="pill" style="font-size:11px;padding:2px 8px;">📚 ${p.grade}</span>`:""}
+              </div>
+              <div class="sub" style="font-size:11px;margin-top:3px;">来館 ${visitCount} 回${nextMilestone?` ／ 次のステッカーまで ${nextMilestone-visitCount}回`:""}</div>
             </div>
           </div>
           <span style="color:var(--text-hint);font-size:18px;">→</span>
@@ -740,35 +949,175 @@ function showPersonDetail(name){
   const p=persons[name]; if(!p) return;
   document.getElementById("persons-list-view").style.display="none";
   const dv=document.getElementById("person-detail-view"); dv.style.display="block";
+
+  const visitCount = p.visits?.length||0;
+  const stickers   = p.stickers||{};
+
+  /* 来館履歴 */
+  const allVisits = (p.visits||[]).slice().sort((a,b)=>a.timestamp.localeCompare(b.timestamp));
+  const firstVisit = allVisits[0]||null;
+  const lastVisit  = allVisits[allVisits.length-1]||null;
+
   const byDate={};
-  (p.visits||[]).forEach(v=>{ if(!byDate[v.date]) byDate[v.date]=[]; byDate[v.date].push(v); });
+  allVisits.forEach(v=>{ if(!byDate[v.date]) byDate[v.date]=[]; byDate[v.date].push(v); });
   const histHtml=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).map(([date,visits])=>`
     <div style="margin-bottom:14px;">
       <span class="visit-date-badge">${date}</span>
       ${visits.map(v=>`<div class="visit-row">${condTag(v.condition)}<small>${v.timestamp}</small></div>`).join("")}
     </div>`).join("")||'<p class="sub">履歴がありません</p>';
-  const last=p.visits?.at(-1);
-  const lastHtml=last?`<div class="detail-meta">最終来館: <strong>${last.timestamp}</strong>　${condTag(last.condition)}</div>`:"";
+
+  /* 初回・最終来館 */
+  const visitInfoHtml = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+      <div style="padding:10px 12px;background:var(--bg2);border-radius:12px;border:1px solid var(--border2);">
+        <div style="font-size:10px;color:var(--text-hint);margin-bottom:3px;">🌱 初回来館</div>
+        <div style="font-size:12px;font-weight:600;color:var(--text);">${firstVisit?firstVisit.date:"—"}</div>
+      </div>
+      <div style="padding:10px 12px;background:var(--bg2);border-radius:12px;border:1px solid var(--border2);">
+        <div style="font-size:10px;color:var(--text-hint);margin-bottom:3px;">🔖 最終来館</div>
+        <div style="font-size:12px;font-weight:600;color:var(--text);">${lastVisit?lastVisit.date:"—"}</div>
+      </div>
+    </div>`;
+
+  /* ステッカー（コンパクト横並び） */
+  const stickerHtml = `<div style="display:flex;flex-wrap:wrap;gap:6px;">` +
+    STICKER_MILESTONES.map(n=>{
+      const reached = visitCount >= n;
+      const done    = !!stickers[n];
+      const bg      = done ? "var(--yellow)" : reached ? "var(--bg2)" : "#f0f0f0";
+      const border  = done ? "var(--yellow-d)" : reached ? "var(--border2)" : "#e0e0e0";
+      const textClr = done ? "#5a4010" : reached ? "var(--text-sub)" : "var(--text-hint)";
+      const opacity = reached ? "1" : "0.45";
+      return `<button onclick="${reached?`"toggleSticker('${name.replace(/'/g,"\\'")}',${n},this)"`:""}"
+        style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:99px;
+               background:${bg};border:1.5px solid ${border};color:${textClr};
+               font-family:inherit;font-size:12px;font-weight:700;
+               cursor:${reached?"pointer":"default"};opacity:${opacity};transition:all .15s;">
+        ${done?"🏅":"🎟️"} ${n}回 ${done?"渡済":"未渡"}
+      </button>`;
+    }).join("") + `</div>`;
+
   dv.innerHTML=`
     <button class="btn-ghost btn-sm" style="margin-bottom:20px;" onclick="backToList()">← 一覧へ戻る</button>
+
+    <!-- プロフィール -->
     <div class="card" style="margin-bottom:16px;">
-      <div style="display:flex;gap:16px;align-items:center;">
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:12px;">
         <div class="avatar av-brown" style="width:54px;height:54px;font-size:22px;">${name[0]}</div>
-        <div>
+        <div style="flex:1;">
           <div style="font-size:22px;font-weight:700;font-family:'Kaisei Opti',serif;">${name}</div>
-          <div class="sub" style="margin-top:4px;">合計 ${p.visits?.length||0} 回来館</div>
+          <div class="sub" style="font-size:13px;margin-top:2px;">${p.kana||""}</div>
+          <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+            ${p.school?`<span class="pill">🏫 ${p.school}</span>`:""}
+            ${p.grade ?`<span class="pill">📚 ${p.grade}</span>`:""}
+          </div>
         </div>
-      </div>${lastHtml}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;">
+        <div style="text-align:center;padding:10px 6px;background:var(--bg2);border-radius:12px;border:1px solid var(--border2);">
+          <div style="font-size:24px;font-weight:700;color:var(--yellow-d);font-family:'Caveat',cursive;">${visitCount}</div>
+          <div class="sub" style="font-size:10px;">累計来館</div>
+        </div>
+        <div style="text-align:center;padding:10px 6px;background:var(--bg2);border-radius:12px;border:1px solid var(--border2);">
+          <div style="font-size:24px;font-weight:700;color:var(--blue-d);font-family:'Caveat',cursive;">${Object.keys(byDate).length}</div>
+          <div class="sub" style="font-size:10px;">来館日数</div>
+        </div>
+        <div style="text-align:center;padding:10px 6px;background:var(--bg2);border-radius:12px;border:1px solid var(--border2);">
+          <div style="font-size:24px;font-weight:700;color:var(--green-d);font-family:'Caveat',cursive;">${STICKER_MILESTONES.filter(m=>stickers[m]).length}</div>
+          <div class="sub" style="font-size:10px;">ステッカー</div>
+        </div>
+      </div>
+      ${visitInfoHtml}
     </div>
+
+    <!-- 初回来館のきっかけ -->
+    <div class="card card-green" style="margin-bottom:16px;">
+      <div class="section-head"><h2>🌱 初回来館のきっかけ</h2></div>
+      <textarea id="first-reason-area" rows="3"
+        placeholder="例: 友達に誘われて、チラシを見て、通りかかって..."
+        style="font-size:14px;">${p.firstReason||""}</textarea>
+      <button class="btn btn-green btn-sm" id="first-reason-btn" style="margin-top:10px;width:auto;padding:8px 20px;"
+        onclick="saveFirstReason('${name.replace(/'/g,"\\'")}')">💾 保存</button>
+    </div>
+
+    <!-- メモ -->
     <div class="card card-blue" style="margin-bottom:16px;">
-      <h2 class="sec">📝 メモ・追加情報</h2>
+      <div class="section-head"><h2>📝 メモ・追加情報</h2></div>
       <textarea id="notes-area" rows="4" placeholder="例: バドミントンが好き、毎週火曜来館...">${p.notes||""}</textarea>
-      <button class="btn btn-green" id="save-btn" style="margin-top:14px;" onclick="saveNotes('${name.replace(/'/g,"\\'")}')">💾 保存する</button>
+      <button class="btn btn-green" id="save-btn" style="margin-top:12px;" onclick="saveNotes('${name.replace(/'/g,"\\'")}')">💾 保存する</button>
     </div>
+
+    <!-- ステッカー（コンパクト） -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="section-head"><h2>🏅 ステッカー</h2></div>
+      <p class="sub" style="font-size:11px;margin-bottom:10px;">達成済みをタップして渡し済みに切り替えられます</p>
+      ${stickerHtml}
+    </div>
+
+    <!-- 来館履歴 -->
     <div class="card">
       <div class="section-head"><h2>🗓️ 来館履歴</h2></div>
       ${histHtml}
     </div>`;
+}
+
+/* ---- 初来館きっかけ保存 ---- */
+async function saveFirstReason(name){
+  const firstReason = document.getElementById("first-reason-area").value;
+  await apiCall("saveFirstReason",{name, firstReason});
+  persons[name].firstReason = firstReason;
+  const btn = document.getElementById("first-reason-btn");
+  btn.textContent="✅ 保存しました！"; btn.style.background="var(--green-d)"; btn.style.color="var(--white)";
+  setTimeout(()=>{ btn.textContent="💾 保存"; btn.style.background=""; btn.style.color=""; }, 2000);
+}
+
+/* ---- ステッカートグル ---- */
+async function toggleSticker(name, milestone){
+  const p = persons[name]; if(!p) return;
+  if(!p.stickers) p.stickers={};
+  p.stickers[milestone] = !p.stickers[milestone];
+  await apiCall("saveStickers",{name, stickers:p.stickers});
+  showPersonDetail(name);
+}
+
+
+/* ---- パスワード変更 ---- */
+async function changePassword(){
+  const current = document.getElementById("pw-current").value;
+  const newPw   = document.getElementById("pw-new").value;
+  const confirm = document.getElementById("pw-confirm").value;
+  const errCur  = document.getElementById("pw-err-current");
+  const errNew  = document.getElementById("pw-err-new");
+  const errConf = document.getElementById("pw-err-confirm");
+  const success = document.getElementById("pw-success");
+  [errCur, errNew, errConf].forEach(e=>e.style.display="none");
+  success.style.display = "none";
+  // フロント側バリデーション
+  if(newPw.length < 6){ errNew.style.display="block"; return; }
+  if(newPw !== confirm){ errConf.style.display="block"; return; }
+  const btn = document.getElementById("pw-change-btn");
+  btn.textContent="変更中..."; btn.disabled=true;
+  try{
+    if(isDemo){
+      // デモ：ローカル保存
+      if(current !== getPass()){ errCur.style.display="block"; btn.textContent="🔑 パスワードを変更する"; btn.disabled=false; return; }
+      localStorage.setItem("vms_pass", newPw);
+    } else {
+      // GAS側で照合＋保存
+      const res = await apiCall("changePass",{ currentPass: current, newPass: newPw });
+      if(!res.ok){
+        if(res.reason==="wrong_current") errCur.style.display="block";
+        else if(res.reason==="too_short") errNew.style.display="block";
+        btn.textContent="🔑 パスワードを変更する"; btn.disabled=false;
+        return;
+      }
+    }
+    document.getElementById("pw-current").value = "";
+    document.getElementById("pw-new").value     = "";
+    document.getElementById("pw-confirm").value  = "";
+    success.style.display = "block";
+  }catch(e){ alert("通信エラーが発生しました。もう一度お試しください。"); }
+  btn.textContent="🔑 パスワードを変更する"; btn.disabled=false;
 }
 
 function backToList(){
